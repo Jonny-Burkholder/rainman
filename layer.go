@@ -6,4 +6,6 @@ type Layer struct {
 }
 
 //Activate does what it says on the tin
-func (l *Layer) Activate()
+func (l *Layer) Activate(inputs []float32) {
+
+}

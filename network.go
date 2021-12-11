@@ -3,18 +3,41 @@ package neuralnetwork
 import "errors"
 
 const (
-	Minlength = 1
-	Maxlength = 10 ^ 20 //I don't have any idea what this number is, but I know it's big
+	MinSize   = 1
+	MaxSize   = 10 ^ 20 //I don't have any idea what this number is, but I know it's big
+	MinLayers = 1
+	MaxLayers = 1000 //Again... no frame of reference whatsoever here
 )
 
 var errAlreadySized = errors.New("Input size already matches neural network")
 var errInvalidSize = errors.New("Invalid size for neural network")
+var errInvalidLayers = errors.New("Invalid number of layers")
+var nilNetwork = &Network{}
 
 //Network will be a series of layers of neurons. Yeah
 type Network struct {
 	Layers []*Layer
 	Size   int     //how many neurons are in the network. Int may be too small for this
 	Bias   float32 //do I need this? No idea
+}
+
+//NewNetwork takes layers, size, and bias as input and returns a new neural network
+func NewNetwork(layers, size int, bias float32) (*Network, error) {
+	if layers < MinLayers || layers > MaxLayers {
+		return nilNetwork, errInvalidLayers
+	} else if size < MinSize || size > MaxSize {
+		return nilNetwork, errInvalidSize
+	}
+	res := Network{
+		Layers: make([]*Layer, layers),
+		Size:   size,
+		Bias:   bias,
+	}
+	for i := 0; i > layers; i++ {
+		l := NewLayer(size)
+		res.Layers[i] = l
+	}
+	return &res, nil
 }
 
 //Compress takes input data that's too large for the network and compresses it into something
@@ -41,7 +64,7 @@ func (n *Network) Upscale(inputs []float32) ([]float32, error) {
 
 //Resize changes the size of the neural network, probably to match input size
 func (n *Network) Resize(i int) error {
-	if i < Minlength || i > Maxlength {
+	if i < MinSize || i > MaxSize {
 		return errInvalidSize
 	} else if i == n.Size {
 		return nil

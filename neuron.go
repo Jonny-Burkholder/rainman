@@ -1,6 +1,10 @@
 package neuralnetwork
 
-import "errors"
+import (
+	"errors"
+	"math/rand"
+	"time"
+)
 
 const (
 	Minweight float32 = -10000
@@ -11,6 +15,14 @@ var errinvalidweight = errors.New("Weight is invalid")
 
 type Neuron struct {
 	Weight float32 //I have no idea what I'm doing
+}
+
+//NewNeuron returns a new neuron with a random value
+func NewNeuron() *Neuron {
+	rand.Seed(time.Now().Unix())
+	return &Neuron{
+		Weight: rand.Float32(), //This will need to be scaled to something between 1 and 0, obviously
+	}
 }
 
 //reWeight changes the weight for an individual neuron

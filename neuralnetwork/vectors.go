@@ -5,15 +5,11 @@ package neuralnetwork
 //Vector is a line with a length, a slope, and a velocity
 //Maybe this should be an interface? But probably not
 type Vector struct {
-	Length   float32
-	Slope    float32
-	Velocity float32 //not actually sure how this is measured
+	Data []float32
 }
 
-func NewVector(length, slope, velocity float32) *Vector {
+func NewVector(data ...float32) *Vector {
 	return &Vector{
-		Length:   length,
-		Slope:    slope,
-		Velocity: velocity,
+		Data: data,
 	}
 }

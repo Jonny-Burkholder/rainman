@@ -7,6 +7,7 @@ import "errors"
 var nilVector = &Vector{}
 var errInsufficientVectors = errors.New("Insufficient number of vectors to perform this operation")
 var errUnmatchedVectorDimensions = errors.New("Dimensions of vectors does not match")
+var errNoCrossProduct = errors.New("Cross product of these vectors is unknown")
 
 //Vector is an n dimensional line segment representing a movement throughout a real or imagined space
 //It may be overkill to define a new type for what is basically a slice of floats, but I think it'll be
@@ -56,8 +57,18 @@ func DotProduct(vectors ...*Vector) (float32, error) {
 }
 
 //CrossProduct does some voodoo, I'm sure
-func CrossProduct(vectors ...*Vector) (*Vector, error) {
-	return nilVector, nil
+func CrossProduct(a, b *Vector) (*Vector, error) {
+	if len(a.Data) != 3 || len(b.Data) != 3 {
+		return nilVector, errNoCrossProduct
+	}
+	res := make([]float32, len(a.Data))
+
+	//find the determinant of the resulting matrix of stacking the vectors
+	//I'll do this later
+
+	return &Vector{
+		Data: res,
+	}, nil
 }
 
 //AddVectors returns the sum of two or more vectors

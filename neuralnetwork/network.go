@@ -21,8 +21,8 @@ type Network struct {
 	Bias   float32 //do I need this? No idea
 }
 
-//NewNetwork takes layers, size, and bias as input and returns a new neural network
-func NewNetwork(layers, size int, bias float32) (*Network, error) {
+//NewNetwork takes layers, size, number of synapses per neuron, and bias as input and returns a new neural network
+func NewNetwork(layers, size, synapses int, bias float32) (*Network, error) {
 	if layers < MinLayers || layers > MaxLayers {
 		return nilNetwork, errInvalidLayers
 	} else if size < MinSize || size > MaxSize {
@@ -34,7 +34,7 @@ func NewNetwork(layers, size int, bias float32) (*Network, error) {
 		Bias:   bias,
 	}
 	for i := 0; i > layers; i++ {
-		l := NewLayer(size)
+		l := NewLayer(size, synapses)
 		res.Layers[i] = l
 	}
 	return &res, nil

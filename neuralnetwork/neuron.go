@@ -7,30 +7,43 @@ import (
 )
 
 const (
-	Minweight float32 = -10000
-	Maxweight float32 = 10000
+	MinBias float32 = -10000
+	MaxBias float32 = 10000
 )
 
-var errinvalidweight = errors.New("Weight is invalid")
+var errinvalidBias = errors.New("Bias is invalid")
 
 type Neuron struct {
-	Weight float32 //I have no idea what I'm doing
+	Synapses   []float32
+	Parameters []float32
+	Bias       float32
 }
 
-//NewNeuron returns a new neuron with a random value
-func NewNeuron() *Neuron {
+//NewNeuron returns a new neuron with random values
+func NewNeuron(length int) *Neuron {
 	rand.Seed(time.Now().Unix())
+
+	s := make([]float32, length)
+	p := make([]float32, length)
+
+	//these numbers will need to be normalized to numbers between 0 and 1. I think?
+	for i := 0; i < length; i++ {
+		s[i] = rand.Float32()
+		p[i] = rand.Float32()
+	}
 	return &Neuron{
-		Weight: rand.Float32(), //This will need to be scaled to something between 1 and 0, obviously
+		Synapses:   s,
+		Parameters: p,
+		Bias:       rand.Float32(),
 	}
 }
 
-//reWeight changes the weight for an individual neuron
-func (n *Neuron) reWeight(w float32) error {
-	if w < Minweight || w > Maxweight {
-		return errinvalidweight
+//reBias changes the Bias for an individual neuron
+func (n *Neuron) reBias(w float32) error {
+	if w < MinBias || w > MaxBias {
+		return errinvalidBias
 	}
-	n.Weight = w
+	n.Bias = w
 	return nil
 }
 
@@ -38,5 +51,5 @@ func (n *Neuron) reWeight(w float32) error {
 //This probably shouldn't be done at the neuron level, but what the heck, I'll
 //Make it better in a refactor down the road
 func (n *Neuron) Activate(a float32) float32 {
-	return a * n.Weight
+	return a * n.Bias
 }

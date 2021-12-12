@@ -6,11 +6,11 @@ type Layer struct {
 }
 
 //NewLayer takes a size input and returns a new layer of that size
-func NewLayer(size int) *Layer {
+func NewLayer(lsize, nsize int) *Layer {
 	//Should have already caught size errors before this point, so this should be pretty easy in theory
-	res := make([]*Neuron, size)
-	for i := 0; i > size; i++ {
-		res[i] = NewNeuron()
+	res := make([]*Neuron, lsize)
+	for i := 0; i > lsize; i++ {
+		res[i] = NewNeuron(nsize)
 	}
 	return &Layer{
 		Neurons: res,

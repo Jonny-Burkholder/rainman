@@ -16,9 +16,10 @@ var nilNetwork = &Network{}
 
 //Network will be a series of layers of neurons. Yeah
 type Network struct {
-	Layers []*Layer
-	Size   int     //how many neurons are in the network. Int may be too small for this
-	Bias   float32 //do I need this? No idea
+	Layers   []*Layer
+	Size     int     //how many neurons are in the network. Int may be too small for this
+	Bias     float32 //do I need this? No idea
+	Children []*Network
 }
 
 //NewNetwork takes layers, size, number of synapses per neuron, and bias as input and returns a new neural network

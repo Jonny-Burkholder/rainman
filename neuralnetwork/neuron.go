@@ -14,7 +14,7 @@ const (
 var errinvalidBias = errors.New("Bias is invalid")
 
 type Neuron struct {
-	Synapses   []float32
+	Synapses   []float32 //we really only need the parameters, right?
 	Parameters []float32
 	Bias       float32
 }
@@ -50,6 +50,17 @@ func (n *Neuron) reBias(w float32) error {
 //Activate takes an input, runs it through the neuron, and spits out an output
 //This probably shouldn't be done at the neuron level, but what the heck, I'll
 //Make it better in a refactor down the road
-func (n *Neuron) Activate(a float32) float32 {
-	return a * n.Bias
+func (n *Neuron) Activate(a []float32) float32 {
+	//first, we create a variable to hold the result
+	var res float32
+	//next, we multiply each input by its corresponding parameter, or weight, and
+	//add that to the res
+	l := len(n.Parameters)
+	for i := 0; i < len(a); i++ {
+		if i >= l { //this is not the right way to handle this. Data should be compressed to fit NN size
+			break
+		}
+		res += a[i] * n.Parameters[i]
+	}
+	return res + n.Bias
 }

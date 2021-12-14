@@ -1,7 +1,6 @@
 package neuralnetwork
 
 import (
-	"fmt"
 	"math/rand"
 )
 
@@ -25,15 +24,18 @@ func NewLayer(lsize, nsize int) *Layer {
 }
 
 //Activate does what it says on the tin
-func (l *Layer) Activate(inputs []float32) ([]float32, error) {
-	if len(inputs) != len(l.Neurons) {
-		return []float32{}, fmt.Errorf("Hey, I don't know how to do that yet")
-	}
+func (l *Layer) Activate(inputs []float32) []float32 {
 
 	res := make([]float32, len(l.Neurons))
 
 	for i := 0; i < len(l.Neurons); i++ {
 		res[i] = inputs[i] * l.Neurons[i].Weight
 	}
-	return res, nil
+	return res
+}
+
+//BackPropogate re-trains the network. Somehow
+func (l *Layer) BackPropogate(e []float32) []float32 {
+	//Do magic and calculus
+	return []float32{}
 }

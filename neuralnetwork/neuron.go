@@ -16,6 +16,7 @@ var errinvalidBias = errors.New("Bias is invalid")
 //So we're going to use Neuron and Synapse interchangeably for now
 type Neuron struct {
 	Weight float32
+	Next   []*Neuron
 }
 
 //NewNeuron returns a new neuron with random values

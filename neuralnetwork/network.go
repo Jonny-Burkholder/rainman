@@ -1,6 +1,10 @@
 package neuralnetwork
 
-import "errors"
+import (
+	"errors"
+	"math/rand"
+	"time"
+)
 
 const (
 	MinSize   = 1
@@ -108,6 +112,27 @@ func (n *Network) StepSize(s float32) float32 {
 //NewIntercept takes a y intercept and a step size float32 as input, and returns a new y intercept based on gradient descent
 func (n *Network) NewIntercept(y, step float32) float32 {
 	return y - step
+}
+
+//Stochastic takes an integer l, and returns a slice of indeces bounded between zero and l
+//The resultant slice is the fixed length of data points used for stochastic gradient descent,
+//and is used to
+func (n *Network) Stochastic(l int) []int {
+	rand.Seed(time.Now().UnixNano())
+	temp := make(map[int]bool)
+	res := make([]int, n.Config.Stochastic)
+	for i := 0; i < l; i++ {
+		//if the number is already in use, loop until a unique number is reached
+		for {
+			num := rand.Intn(l)
+			if _, ok := temp[num]; ok == !true {
+				res[i] = num
+				temp[num] = true
+				break
+			}
+		}
+	}
+	return res
 }
 
 //BackPropogate takes a float32 error value as an input, and rebalances the network based on that error value

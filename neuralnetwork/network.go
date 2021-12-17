@@ -18,6 +18,7 @@ var nilNetwork = &Network{}
 type Network struct {
 	Name     string
 	ID       float32
+	Config   *Config
 	Layers   []*Layer
 	Size     int //how many neurons are in the network. Int may be too small for this
 	Bias     float32
@@ -99,10 +100,20 @@ func (n *Network) Activate(input []float32) float32 {
 
 }
 
+//StepSize takes a slope as an input, and returns a step size
+func (n *Network) StepSize(s float32) float32 {
+	return s * n.Config.LearningRate
+}
+
+//NewIntercept takes a y intercept and a step size float32 as input, and returns a new y intercept based on gradient descent
+func (n *Network) NewIntercept(y, step float32) float32 {
+	return y - step
+}
+
 //BackPropogate takes a float32 error value as an input, and rebalances the network based on that error value
 func (n *Network) BackPropogate(e float32) {
 
-	var a float32
+	//var a float32
 
 	for i := len(n.Layers) - 1; i >= 0; i-- {
 		//a = n.Layers[i].BackPropogate(a) //clearly this doesn't work, but hey, I don't actually know how to do this yet

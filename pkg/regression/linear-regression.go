@@ -5,17 +5,18 @@ import "math"
 //For now, a line only deals with 2 dimensions, because my poor brain
 type Line struct {
 	//Dimensions int //we'll add this later
-	Y        []float32
-	X        []float32 //dependent variabls in n number of dimensios
-	YAvg     float32
-	XAvg     float32
-	Slope    float32 //No idea how this works
-	Inercept float32
+	Slope     float32 //No idea how this works
+	Intercept float32
 }
 
-//NewLine takes a series of y and x values and returns a new line
-//Need to return an error, don't feel like it right now
-func NewLine(y, x []float32) *Line {
+//NewLine returns an empty line
+func NewLine() *Line {
+	return &Line{}
+}
+
+//Fit fits a line to x and y data. For now it just reads the whole
+//thing, it doesn't randomize or cap the input at all
+func (l *Line) Fit(y, x []float32) {
 
 	var yavg, xavg float32 = 0, 0
 
@@ -25,29 +26,18 @@ func NewLine(y, x []float32) *Line {
 
 	yavg /= float32(len(y))
 
-	for i := 0; i < len(y); i++ {
-		xavg += y[i]
+	for i := 0; i < len(x); i++ {
+		xavg += x[i]
 	}
 
 	xavg /= float32(len(x))
 
-	return &Line{
-		Y:    y,
-		X:    x,
-		YAvg: yavg,
-		XAvg: xavg,
-	}
-}
-
-//I forget what this is actually supposed to do
-func (l *Line) Fit() {
-
 	var num, den float32
 
 	//this loop should break if we go out of bounds
-	for i := 0; i != len(l.Y) || i != len(l.X); i++ {
-		a := l.X[i] - l.XAvg
-		b := l.Y[i] - l.YAvg
+	for i := 0; i != len(y) || i != len(x); i++ {
+		a := x[i] - xavg
+		b := y[i] - yavg
 
 		num += a * b
 		//may have to change to float64 to avoid all this casting
@@ -56,11 +46,11 @@ func (l *Line) Fit() {
 
 	l.Slope = num / den
 
-	l.Inercept = l.YAvg - (l.Slope * l.XAvg)
+	l.Intercept = yavg - (l.Slope * xavg)
 
 }
 
 //Predict does what it says on the tin
 func (l *Line) Predict(v float32) float32 {
-	return l.Inercept + (l.Slope * v)
+	return l.Intercept + (l.Slope * v)
 }

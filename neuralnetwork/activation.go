@@ -64,11 +64,11 @@ func LeakyRelu(a float64) float64 {
 func LeakyRelu6(a float64) float64 {
 	if a < 0 {
 		return .001 * a
-	}
-	if a > 6 {
+	} else if a > 6 {
 		return 6
+	} else {
+		return a
 	}
-	return a
 }
 
 //Swish is weird, but probably really good?

@@ -56,6 +56,9 @@ func (n *Neuron) reBias(w float64) error {
 }
 
 //Fire takes an input, runs it through the neuron, and spits out an output
+//Note - I'm pretty sure on the layer level I can store the activation function
+//as a parameter, instead of going through this switch statment every time. That
+//should save us a lot of time
 func (n *Neuron) Fire(a float64) float64 {
 	a += n.Bias
 	//activate based on function
@@ -67,7 +70,7 @@ func (n *Neuron) Fire(a float64) float64 {
 	case 3:
 		return BinaryStep(a)
 	case 4:
-		return Tahn(a)
+		return Tanh(a)
 	case 5:
 		return LeakyRelu(a)
 	case 6:

@@ -6,8 +6,8 @@ import (
 
 //Layer is a two-dimensional array of neurons. I guess. How does this work?
 type Layer struct {
-	Neurons []*Neuron //Should I abstract the 2-dimensionality? Like, just decide that a row is so many neurons, instead of using a real matrix?
-	Bias    float32
+	Neurons []*Neuron
+	Weights [][]float64 //Matrix of connectins to next layer
 }
 
 //NewLayer takes a size input and returns a new layer of that size
@@ -19,11 +19,11 @@ func NewLayer(lsize, nsize int) *Layer {
 	}
 	return &Layer{
 		Neurons: res,
-		Bias:    rand.Float32(),
+		Bias:    rand.Float64(),
 	}
 }
 
-//Activate does what it says on the tin
+//Activate does a nasty matrix multiplication thing
 func (l *Layer) Activate(inputs []float32) []float32 {
 
 	res := make([]float32, len(l.Neurons))

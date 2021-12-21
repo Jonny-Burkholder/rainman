@@ -57,5 +57,28 @@ func (n *Neuron) reBias(w float64) error {
 
 //Fire takes an input, runs it through the neuron, and spits out an output
 func (n *Neuron) Fire(a float64) float64 {
-	return a * n.Bias
+	a += n.Bias
+	//activate based on function
+	switch n.ActivationType {
+	case 1:
+		return Relu(a)
+	case 2:
+		return Linear(a)
+	case 3:
+		return BinaryStep(a)
+	case 4:
+		return Tahn(a)
+	case 5:
+		return LeakyRelu(a)
+	case 6:
+		return Swish(a)
+	case 7:
+		return Elu(a)
+	case 8:
+		return Gelu(a)
+	case 9:
+		return Selu(a)
+	default:
+		return Sigmoid(a)
+	}
 }

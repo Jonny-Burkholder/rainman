@@ -18,36 +18,40 @@ func main() {
 
 }
 
-const(
-	Stochastic int 100
-	BaseRate int .001
+const (
+	Stochastic int     = 100
+	BaseRate   float64 = .001
 )
 
 //Dataset is a collection of training data
-type Dataset struct{
+type Dataset struct {
 	Data []*Data
 }
 
-func newDataSet(y, x []float32) *DataSet{}
+func newDataSet(y, x []float32) *Dataset {
+	return &Dataset{}
+}
 
 //Data is a single instance of training data
 //More complex data should be in matrix form, not
 //whatever this is
-type Data struct{
+type Data struct {
 	Y float32
 	X float32
 }
 
-func newData(y, x float32) *Data{}
+func newData(y, x float32) *Data {
+	return &Data{}
+}
 
 //Config is a configuration for the network
-type Config struct{
+type Config struct {
 	CurrentRate float32
 	CurrentStep float32
 }
 
 //Network will just have 1 neuron for now
-type Network struct{
+type Network struct {
 	Neuron *Neuron
 	Output *Output
 	Config *Config
@@ -74,19 +78,19 @@ type Neuron struct {
 
 func newNeuron() *Neuron {
 	return &Neuron{
-		Weight: rand.float32(),
+		Weight: rand.Float32(),
 	}
 }
 
-func (n *Neuron) Fire(x float32) float32{
+func (n *Neuron) Fire(x float32) float32 {
 	return x * n.Weight
 }
 
 //Output just does the intercept
-type Output struct{
+type Output struct {
 	Bias float32
 }
 
-func (o *Output) Fire(f float32) float32{
+func (o *Output) Fire(f float32) float32 {
 	return f + o.Bias
 }

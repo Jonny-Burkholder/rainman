@@ -26,8 +26,9 @@ type Network struct {
 	Layers   []*Layer
 	Size     int //how many neurons are in the network. Int may be too small for this
 	Bias     float32
-	Clusters []*Cluster //Clusters represent information that is yet uncategorized, but is clustered together
-	Children []*Network //To pass along for more specialized recognition
+	Clusters []*Cluster          //Clusters represent information that is yet uncategorized, but is clustered together
+	Children []*Network          //To pass along for more specialized recognition
+	OutPuts  map[int]interface{} //Terrible! Just terrible
 }
 
 //NewNetwork takes layers, size, number of synapses per neuron, and bias as input and returns a new neural network
@@ -84,24 +85,8 @@ func (n *Network) Resize(i int) error {
 }
 
 //Activate takes a slice of input data and passes it through each layer of the network
-func (n *Network) Activate(input []float32) float32 {
-
-	a := input
-
-	for _, layer := range n.Layers {
-		a = layer.Activate(a)
-	}
-
-	var res float32
-
-	//This step ideally will be done simultaneously with activating the final layer. Right now we're
-	//repeating work, and I don't like that
-	for _, val := range a {
-		res += val
-	}
-
-	return res + n.Bias
-
+func (n *Network) Activate(input []float64) float64 {
+	return rand.Float64()
 }
 
 //StepSize takes a slope as an input, and returns a step size
@@ -136,11 +121,6 @@ func (n *Network) Stochastic(l int) []int {
 }
 
 //BackPropogate takes a float32 error value as an input, and rebalances the network based on that error value
-func (n *Network) BackPropogate(e float32) {
-
-	//var a float32
-
-	for i := len(n.Layers) - 1; i >= 0; i-- {
-		//a = n.Layers[i].BackPropogate(a) //clearly this doesn't work, but hey, I don't actually know how to do this yet
-	}
+func (n *Network) BackPropogate(e float64) {
+	//For now, do stochastic gradient descent
 }

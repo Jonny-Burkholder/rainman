@@ -57,6 +57,20 @@ func LeakyRelu(a float64) float64 {
 	return a
 }
 
+//LeakyRelu6 combines leaky relu with a max cap
+//of 6. Eventually I'd like to figure out how to
+//make the cap variable based on either the network's
+//config, or some parameter in the layer
+func LeakyRelu6(a float64) float64 {
+	if a < 0 {
+		return .001 * a
+	}
+	if a > 6 {
+		return 6
+	}
+	return a
+}
+
 //Swish is weird, but probably really good?
 func Swish(a float64) float64 {
 	return a * Sigmoid(a)

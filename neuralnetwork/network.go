@@ -9,7 +9,7 @@ import (
 
 const (
 	MinSize   = 1
-	MaxSize   = 10 ^ 12 //One Trillion should be enough neurons per layer, yeah?
+	MaxSize   = 1000000000000 //One Trillion should be enough neurons per layer, yeah?
 	MinLayers = 2
 	MaxLayers = 1000 //This is completely arbitrary and probably way too much
 )
@@ -100,12 +100,6 @@ func (n *Network) Resize(i int) error {
 	return nil
 }
 
-//Activate takes a slice of input data and passes it through each layer of the network
-func (n *Network) Hactivate(input []float64) float64 {
-	//activate each layer
-	return 0
-}
-
 //StepSize takes a slope as an input, and returns a step size
 func (n *Network) StepSize(s float64) float64 {
 	return s * n.Config.LearningRate
@@ -152,3 +146,12 @@ func (n *Network) Activate(a []float64) ([]float64, error) {
 //Descend does the least squares gradient descent thing
 //I don't actually know how to do this yet
 func (n *Network) Descend(output, expected []float64) {}
+
+//String
+func (n *Network) String() string {
+	var s string
+	s += fmt.Sprintf("Network Name: %s\n", n.Name)
+	s += fmt.Sprintln("Layers:")
+	for 
+
+}

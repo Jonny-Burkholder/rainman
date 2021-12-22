@@ -1,6 +1,7 @@
 package neuralnetwork
 
 import (
+	"fmt"
 	"math/rand"
 	"time"
 )
@@ -25,13 +26,13 @@ func NewLayer(nsize, wsize int) *Layer {
 		n[i] = NewNeuron()
 	}
 
-	//each row of the weights matrix will represent a neuron in the next layer
-	w := make([][]float64, wsize)
-	for i := 0; i < wsize; i++ {
+	//each row of the weights matrix will represent a neuron in the current layer
+	w := make([][]float64, nsize)
+	for i := 0; i < nsize; i++ {
 		//and each column in each row will represent a neuron in the current layer's
-		//relationship to the output neuron
-		w[i] = make([]float64, nsize)
-		for j := 0; j < nsize; j++ {
+		//relationship to a neuron in the next layer
+		w[i] = make([]float64, wsize)
+		for j := 0; j < wsize; j++ {
 			//rando-fill those weights
 			w[i][j] = rand.Float64()
 		}
@@ -48,7 +49,9 @@ func NewLayer(nsize, wsize int) *Layer {
 //Evemtially I'll bring in an optimized matrix library,
 //but for now I'll hand-roll it
 func (l *Layer) Activate(inputs []float64) []float64 {
-	res := make([]float64, len(inputs))
+	fmt.Println(len(inputs))
+	fmt.Println(len(l.Neurons))
+	res := make([]float64, len(l.Weights[0])) //there's gotta be a more clear way to do this
 	//Send each input through its respective neuron
 	for i := 0; i < len(inputs); i++ {
 		a := l.Neurons[i].Fire(inputs[i])

@@ -26,6 +26,10 @@ func main() {
 		data[i] = rand.Float64()
 	}
 
+	fmt.Println("Data:")
+	fmt.Println(data)
+	fmt.Println("Output:")
+
 	fmt.Println(nn.Activate(data))
 
 }

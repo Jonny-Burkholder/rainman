@@ -73,6 +73,9 @@ func LeakyRelu6(a float64) float64 {
 
 //Swish is weird, but probably really good?
 func Swish(a float64) float64 {
+	//This I guess should eventually involve a constant,
+	//probably at the neuron level. I can make that a
+	//slice of float64 on the layer level, I think
 	return a * Sigmoid(a)
 }
 

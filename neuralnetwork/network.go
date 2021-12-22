@@ -134,4 +134,4 @@ func (n *Network) Stochastic(l int) []int {
 
 //Descend does the least squares gradient descent thing
 //I don't actually know how to do this yet
-func (n *Network) Descend(output, expected []float64)
+func (n *Network) Descend(output, expected []float64) {}

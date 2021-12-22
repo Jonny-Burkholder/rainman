@@ -75,50 +75,40 @@ func NewNetwork(name string, config *Config, neurons ...int) (*Network, error) {
 //Compress takes input data that's too large for the network and compresses it into something
 //more manageable. I'm assuming this will only be necessary for truly massive pieces of data,
 //as the networks should, for the most part, be able to scale to their input
-func (n *Network) Compress(inputs []float32) ([]float32, error) {
+func (n *Network) Compress(inputs []float64) ([]float64, error) {
 	if len(inputs) > n.Size {
-		res := make([]float32, n.Size)
+		res := make([]float64, n.Size) //n.Size does *not* work here. We'll have to add another argument to the function
 		//do stuff
 		return res, nil
 	}
-	return []float32{}, errAlreadySized
+	return []float64{}, errAlreadySized
 }
 
 //Upscale takes an input that's too small and interpolates intermediate values
-func (n *Network) Upscale(inputs []float32) ([]float32, error) {
+func (n *Network) Upscale(inputs []float64) ([]float64, error) {
 	if len(inputs) < n.Size {
-		res := make([]float32, n.Size)
+		res := make([]float64, n.Size)
 		//do magic
 		return res, nil
 	}
-	return []float32{}, errAlreadySized
+	return []float64{}, errAlreadySized
 }
 
 //Resize changes the size of the neural network, probably to match input size
 func (n *Network) Resize(i int) error {
-	if i < MinSize || i > MaxSize {
-		return errInvalidSize
-	} else if i == n.Size {
-		return nil
-	}
-	n.Size = i
-	//Do something to resize actual network, though that feels bad. What happens to all our weights?
+	//No idea how this will work, or if it's even a good idea
 	return nil
 }
 
 //Activate takes a slice of input data and passes it through each layer of the network
 func (n *Network) Activate(input []float64) float64 {
-	return rand.Float64()
+	//activate each layer
+	return 0
 }
 
 //StepSize takes a slope as an input, and returns a step size
 func (n *Network) StepSize(s float64) float64 {
 	return s * n.Config.LearningRate
-}
-
-//NewIntercept takes a y intercept and a step size float32 as input, and returns a new y intercept based on gradient descent
-func (n *Network) NewIntercept(y, step float32) float32 {
-	return y - step
 }
 
 //Stochastic takes an integer l, and returns a slice of indeces bounded between zero and l
@@ -142,7 +132,6 @@ func (n *Network) Stochastic(l int) []int {
 	return res
 }
 
-//BackPropogate takes a float32 error value as an input, and rebalances the network based on that error value
-func (n *Network) BackPropogate(e float64) {
-	//For now, do stochastic gradient descent
-}
+//Descend does the least squares gradient descent thing
+//I don't actually know how to do this yet
+func (n *Network) Descend(output, expected []float64)

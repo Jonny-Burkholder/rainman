@@ -48,14 +48,19 @@ func NewLayer(nsize, wsize int) *Layer {
 //Evemtially I'll bring in an optimized matrix library,
 //but for now I'll hand-roll it
 func (l *Layer) Activate(inputs []float64) []float64 {
-	var res []float64
+	res := make([]float64, len(inputs))
 	//Send each input through its respective neuron
-	//Do matrix multiplication to get some vector
+	for i := 0; i < len(inputs); i++ {
+		a := l.Neurons[i].Fire(inputs[i])
+		//Feed the output from each neuron through the weights matrix and =+ the
+		//dot product to the jth index of res
+		for j := 0; j < len(res); j++ {
+			res[j] += l.Weights[i][j] * a
+		}
+	}
+	//return that vector
 	return res
 }
 
-//BackPropogate re-trains the network. Somehow
-func (l *Layer) BackPropogate(e []float32) []float32 {
-	//Do magic and calculus
-	return []float32{}
-}
+//Descend does gradient descent at a layer level
+func (l *Layer) Descend() {}

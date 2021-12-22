@@ -8,10 +8,11 @@ type Config struct {
 	Stochastic     int
 }
 
-func NewConfig(a, m, s int, l float64) *Config {
+func NewConfig(a, m, s int, l, b float64) *Config {
 	return &Config{
 		ActivationType: a,
 		LearningRate:   l,
+		BaseStepSize:   b,
 		MaxSteps:       m,
 		Stochastic:     s,
 	}

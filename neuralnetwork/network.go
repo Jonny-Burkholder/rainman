@@ -101,7 +101,7 @@ func (n *Network) Resize(i int) error {
 }
 
 //Activate takes a slice of input data and passes it through each layer of the network
-func (n *Network) Activate(input []float64) float64 {
+func (n *Network) Hactivate(input []float64) float64 {
 	//activate each layer
 	return 0
 }
@@ -130,6 +130,23 @@ func (n *Network) Stochastic(l int) []int {
 		}
 	}
 	return res
+}
+
+//Activate takes a slice of inputs and sends the activations
+//layer by layer through the network, until the output is reached
+func (n *Network) Activate(a []float64) ([]float64, error) {
+	if len(a) != len(n.Layers[0].Neurons) {
+		return []float64{}, fmt.Errorf("Invalid number of inputs: want %v, got %v", len(n.Layers[0].Neurons), len(a))
+	}
+
+	var res []float64
+	res = append(res, a...)
+
+	//chain the activations down through the layers
+	for i := 0; i < len(n.Layers); i++ {
+		res = n.Layers[i].Activate(res)
+	}
+	return res, nil
 }
 
 //Descend does the least squares gradient descent thing

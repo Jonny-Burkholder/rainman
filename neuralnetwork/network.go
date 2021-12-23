@@ -55,7 +55,7 @@ func NewNetwork(name string, config *Config, neurons ...int) (*Network, error) {
 	}
 
 	//I should probably have an "OutputLayer" type, instead of doing this
-	res[len(res)-1] = NewLayer(len(neurons)-1, 0)
+	res[len(res)-1] = NewLayer(neurons[len(neurons)-1], 0)
 
 	size += neurons[len(neurons)-1]
 
@@ -151,7 +151,9 @@ func (n *Network) Descend(output, expected []float64) {}
 func (n *Network) String() string {
 	var s string
 	s += fmt.Sprintf("Network Name: %s\n", n.Name)
-	s += fmt.Sprintln("Layers:")
-	for 
-
+	s += fmt.Sprintf("%v layers:\n", len(n.Layers))
+	for i, n := range n.Layers {
+		s += fmt.Sprintf("	Layer %v: [%v] neurons, [%v] connections\n", i, len(n.Neurons), len(n.Weights)*len(n.Weights[0]))
+	}
+	return s
 }

@@ -50,12 +50,18 @@ func NewNetwork(name string, config *Config, neurons ...int) (*Network, error) {
 		if neurons[i] > MaxSize || neurons[i] < MinSize {
 			return nilNetwork, fmt.Errorf("Invalid size: Layer at index %v", i)
 		}
-		res[i] = NewLayer(neurons[i], neurons[i+1])
+		if i != 0 {
+			//if it's not the first or last layer, layer type will be 1, or "hidden"
+			res[i] = NewLayer(neurons[i], neurons[i+1], 1)
+		} else {
+			//if it *is* the first layer, then layer type will be 0, or "synapse"
+			res[i] = NewLayer(neurons[i], neurons[i+1], 0)
+		}
 		size += neurons[i]
 	}
 
 	//I should probably have an "OutputLayer" type, instead of doing this
-	res[len(res)-1] = NewLayer(neurons[len(neurons)-1], 0)
+	res[len(res)-1] = NewLayer(neurons[len(neurons)-1], 0, 2)
 
 	size += neurons[len(neurons)-1]
 

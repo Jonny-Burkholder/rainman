@@ -1,21 +1,28 @@
 package neuralnetwork
 
 import (
-	"fmt"
 	"math/rand"
 	"time"
 )
 
+var LayerTypes []string = []string{"Synapse", "Hidden", "Output"}
+var nilLayer = &Layer{}
+
 //Layer is a two-dimensional array of neurons. I guess. How does this work?
 type Layer struct {
-	Neurons []*Neuron
-	Weights [][]float64 //Matrix of connectins to next layer
+	LayerType int
+	Neurons   []*Neuron
+	Weights   [][]float64 //Matrix of connectins to next layer
 }
 
 //NewLayer takes two inputs, nsize and wsize, where nsize is the number of neurons
 //in the layer, and wsize is the number of weights for each neuron, aka the number
 //of neurons in the next layer. The function returns a new layer
-func NewLayer(nsize, wsize int) *Layer {
+func NewLayer(nsize, wsize, ltype int) *Layer {
+
+	if ltype > len(LayerTypes) {
+		//return an error
+	}
 
 	//activation type should be handled here, not at the neuron level
 
@@ -39,8 +46,9 @@ func NewLayer(nsize, wsize int) *Layer {
 	}
 
 	return &Layer{
-		Neurons: n,
-		Weights: w,
+		LayerType: ltype,
+		Neurons:   n,
+		Weights:   w,
 	}
 
 }
@@ -49,20 +57,26 @@ func NewLayer(nsize, wsize int) *Layer {
 //Evemtially I'll bring in an optimized matrix library,
 //but for now I'll hand-roll it
 func (l *Layer) Activate(inputs []float64) []float64 {
-	fmt.Println(len(inputs))
-	fmt.Println(len(l.Neurons))
-	res := make([]float64, len(l.Weights[0])) //there's gotta be a more clear way to do this
-	//Send each input through its respective neuron
-	for i := 0; i < len(inputs); i++ {
-		a := l.Neurons[i].Fire(inputs[i])
-		//Feed the output from each neuron through the weights matrix and =+ the
-		//dot product to the jth index of res
-		for j := 0; j < len(res); j++ {
-			res[j] += l.Weights[i][j] * a
+	if l.LayerType != 2 {
+		res := make([]float64, len(l.Weights[0])) //there's gotta be a more clear way to do this
+		//Send each input through its respective neuron
+		for i := 0; i < len(inputs); i++ {
+			a := l.Neurons[i].Fire(inputs[i])
+			//Feed the output from each neuron through the weights matrix and =+ the
+			//dot product to the jth index of res
+			for j := 0; j < len(res); j++ {
+				res[j] += l.Weights[i][j] * a
+			}
 		}
+		//return that vector
+		return res
+	} else {
+		res := make([]float64, len(inputs))
+		for i := 0; i < len(inputs); i++ {
+			res[i] = l.Neurons[i].Fire(inputs[i])
+		}
+		return res
 	}
-	//return that vector
-	return res
 }
 
 //Descend does gradient descent at a layer level

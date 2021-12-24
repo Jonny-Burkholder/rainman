@@ -12,17 +12,13 @@ func main() {
 
 	config := neuralnetwork.NewDefaultConfig()
 
-	nn, err := neuralnetwork.NewNetwork("test_network", config, 16, 8, 4, 2)
-
-	fmt.Println(nn.String())
+	nn, err := neuralnetwork.NewNetwork("test_network", config, 16, 8, 1)
 
 	if err != nil {
 		panic(err)
 	}
 
 	rand.Seed(time.Now().UnixNano())
-
-	rand.Seed(rand.Int63())
 
 	data := make([]float64, 16)
 

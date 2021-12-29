@@ -60,28 +60,31 @@ func (n *Neuron) reBias(w float64) error {
 //as a parameter, instead of going through this switch statment every time. That
 //should save us a lot of time
 func (n *Neuron) Fire(a float64) float64 {
-	a += n.Bias
+	var res float64
 	//activate based on function
 	switch n.ActivationType {
 	case 1:
-		return Relu(a)
+		res = Relu(a)
 	case 2:
-		return Linear(a)
+		res = Linear(a)
 	case 3:
-		return BinaryStep(a)
+		res = BinaryStep(a)
 	case 4:
-		return Tanh(a)
+		res = Tanh(a)
 	case 5:
-		return LeakyRelu(a)
+		res = LeakyRelu(a)
 	case 6:
-		return Swish(a)
+		res = Swish(a)
 	case 7:
-		return Elu(a)
+		res = Elu(a)
 	case 8:
-		return Gelu(a)
+		res = Gelu(a)
 	case 9:
-		return Selu(a)
+		res = Selu(a)
 	default:
-		return Sigmoid(a)
+		res = Sigmoid(a)
 	}
+	return res + n.Bias
 }
+
+//

@@ -31,6 +31,7 @@ type Network struct {
 	Clusters    []*Cluster          //Clusters represent information that is yet uncategorized, but is clustered together
 	Children    []*Network          //To pass along for more specialized recognition
 	OutPuts     map[int]interface{} //Terrible! Just terrible
+	Cost        float64             //the cost of the network
 }
 
 //NewNetwork takes a config file and several integers as arguments, and produces a neural
@@ -149,11 +150,26 @@ func (n *Network) Activate(a []float64) ([]float64, error) {
 	return res, nil
 }
 
+//SquaredResidual returns the square of the difference between
+//the expected result, a, and the observed result, b
+func (n *Network) SquaredResidual(a, b float64) float64 {
+	r := a - b
+	return r * r
+}
+
 //Descend does the least squares gradient descent thing
 //I don't actually know how to do this yet
-func (n *Network) Descend(output, expected []float64) {}
+func (n *Network) Descend(expected, output []float64) {
+	//Reset the network cost to zero
+	n.Cost = 0
+	//Calculate the current network cost
+	for i := 0; i < len(expected) && i < len(output); i++ {
+		r := expected[i] - output[i]
+		n.Cost += r * r
+	}
+}
 
-//String
+//String is a stringer function for a network
 func (n *Network) String() string {
 	var s string
 	s += fmt.Sprintf("Network Name: %s\n", n.Name)

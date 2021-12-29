@@ -52,7 +52,7 @@ func ArcTan(a float64) float64 {
 //returns 1/1000 the input value
 func LeakyRelu(a float64) float64 {
 	if a < 0 {
-		return .001 * a
+		return .01 * a
 	}
 	return a
 }
@@ -63,7 +63,7 @@ func LeakyRelu(a float64) float64 {
 //config, or some parameter in the layer
 func LeakyRelu6(a float64) float64 {
 	if a < 0 {
-		return .001 * a
+		return .01 * a
 	} else if a > 6 {
 		return 6
 	} else {

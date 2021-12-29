@@ -161,7 +161,9 @@ func (n *Network) Descend(expected, output []float64) {
 		n.Cost += r * r
 	}
 	//for each layer
-	//for each neuron
+	for i := len(n.Layers) - 2; i >= 0; i-- {
+		n.Layers[i].Descend()
+	}
 	//find the derivative with respect to each weight
 	//
 }

@@ -80,4 +80,10 @@ func (l *Layer) Activate(inputs []float64) []float64 {
 }
 
 //Descend does gradient descent at a layer level
-func (l *Layer) Descend() {}
+func (l *Layer) Descend() []float64 {
+	//for each neuron
+	for _, n := range l.Neurons {
+		//derivatives? Idk
+	}
+	return []float64{}
+}

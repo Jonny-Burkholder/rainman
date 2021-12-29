@@ -150,13 +150,6 @@ func (n *Network) Activate(a []float64) ([]float64, error) {
 	return res, nil
 }
 
-//SquaredResidual returns the square of the difference between
-//the expected result, a, and the observed result, b
-func (n *Network) SquaredResidual(a, b float64) float64 {
-	r := a - b
-	return r * r
-}
-
 //Descend does the least squares gradient descent thing
 //I don't actually know how to do this yet
 func (n *Network) Descend(expected, output []float64) {
@@ -167,6 +160,10 @@ func (n *Network) Descend(expected, output []float64) {
 		r := expected[i] - output[i]
 		n.Cost += r * r
 	}
+	//for each layer
+	//for each neuron
+	//find the derivative with respect to each weight
+	//
 }
 
 //String is a stringer function for a network

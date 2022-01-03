@@ -1,15 +1,18 @@
 package neuralnetwork
 
+/*These were previously methods on neurons, but
+that was stupid so I changed it*/
+
 //SigmoidPrime returns the derivative for the
 //logistic sigmoid activation function
-func (n *Neuron) SigmoidPrime(x float64) float64 {
+func SigmoidPrime(x float64) float64 {
 	return Sigmoid(x) * (1 - Sigmoid(x))
 }
 
 //ReluPrime returns the derivative for the
 //relu activation function. It's kind of
 //lame, to be honest
-func (n *Neuron) ReluPrime(x float64) float64 {
+func ReluPrime(x float64) float64 {
 	if x > 0 {
 		return 1
 	} else {
@@ -21,7 +24,7 @@ func (n *Neuron) ReluPrime(x float64) float64 {
 
 //BinaryStepPrime returns the derivative of
 //the binary step activation function
-func (n *Neuron) BinaryStepPrime(x float64) float64 {
+func BinaryStepPrime(x float64) float64 {
 	if x > 0 {
 		return 1
 	} else {
@@ -31,7 +34,7 @@ func (n *Neuron) BinaryStepPrime(x float64) float64 {
 
 //TanhPrime returns the derivative of the
 //hyperbolic tangent activation function
-func (n *Neuron) TanhPrime(x float64) float64 {
+func TanhPrime(x float64) float64 {
 	res := Tanh(x)
 	res *= res //should be significantly faster than doing the tanh function twice
 	return 1 - res
@@ -39,11 +42,11 @@ func (n *Neuron) TanhPrime(x float64) float64 {
 
 //ArcTanPrime returns the derivative of the
 //ArcTan activation function
-func (n *Neuron) ArcTanPrime() {}
+func ArcTanPrime() {}
 
 //LeakyReluPrime returns the derivative of
 //the leaky relu activation function
-func (n *Neuron) LeakyReluPrime(x, leak float64) float64 {
+func LeakyReluPrime(x, leak float64) float64 {
 	if x > 0 {
 		return 1
 	} else {
@@ -55,7 +58,7 @@ func (n *Neuron) LeakyReluPrime(x, leak float64) float64 {
 //leaky relu6 activation function, which just so
 //happens to be the exact same derivative as the
 //leaky relu function
-func (n *Neuron) LeakyRelu6Prime(x, leak float64) float64 {
+func LeakyRelu6Prime(x, leak float64) float64 {
 	if x > 0 {
 		return 1
 	} else {

@@ -10,15 +10,18 @@ var nilLayer = &Layer{}
 
 //Layer is a two-dimensional array of neurons. I guess. How does this work?
 type Layer struct {
-	LayerType int
-	Neurons   []*Neuron
-	Weights   [][]float64 //Matrix of connectins to next layer
+	LayerType      int
+	ActivationType int
+	Neurons        []*Neuron
+	Weights        [][]float64 //Matrix of connections to next layer
+	Output         []float64   //need some persistence here to backpropogate
+	Primes         [][]float64 //a slice of the derivative of activations for each weight by output neuron. gonna be so confusing
 }
 
 //NewLayer takes two inputs, nsize and wsize, where nsize is the number of neurons
 //in the layer, and wsize is the number of weights for each neuron, aka the number
 //of neurons in the next layer. The function returns a new layer
-func NewLayer(nsize, wsize, ltype int) *Layer {
+func NewLayer(nsize, wsize, ltype, atype int) *Layer {
 
 	if ltype > len(LayerTypes) {
 		//return an error
@@ -46,9 +49,10 @@ func NewLayer(nsize, wsize, ltype int) *Layer {
 	}
 
 	return &Layer{
-		LayerType: ltype,
-		Neurons:   n,
-		Weights:   w,
+		LayerType:      ltype,
+		ActivationType: atype,
+		Neurons:        n,
+		Weights:        w,
 	}
 
 }
@@ -79,19 +83,40 @@ func (l *Layer) Activate(inputs []float64) []float64 {
 	}
 }
 
+//ActivatePrime does the derivative thing. Sorry, I'm tired and in a hurry
+func (l *Layer) ActivatePrime(z float64) float64 {
+	var res float64
+	switch l.ActivationType {
+	//not going to do the tedious work of inputing these all right now
+	default:
+		res = LeakyRelu6Prime(z, .001)
+	}
+	return res
+}
+
 //WeightPrime takes a slice of float64 as its input. This slice represents
 //the derivative of the cost of each neuron in this layer, which has
 //already been calculated elsewhere. The function returns a slice of
 //float64 representing a hint, if you will, of how much to nudge the cost
 //associated with this slice of relationships
-func (l *Layer) WeightPrime(costPrime []float64) []float64 {
+func (l *Layer) WeightPrime(costPrime []float64, previous *Layer) []float64 {
 	//res represents... something. a slice of somethings
 	res := make([]float64, len(l.Neurons))
 
 	//for each neuron
-	for i, n := range l.Neurons {
+	for i := 0; i < len(l.Neurons); i++ {
 		//for each weight being input into the neuron
-		//costprime[i] * n.activationPrime * z(l)prime
+		nPrime := l.ActivatePrime(previous.Output[i])
+		for _, w := range previous.Primes[i] {
+			//costprime[i] * n.activationPrime * z(l)prime
+			res[i] += costPrime[i] * nPrime * w
+		}
+
 	}
 	return res
+}
+
+//BiasPrime does the same as WeightPrime, but with biases. Should be significantly easier
+func (l *Layer) BiasPrime() []float64 {
+	return []float64{}
 }

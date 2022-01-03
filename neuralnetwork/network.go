@@ -53,16 +53,16 @@ func NewNetwork(name string, config *Config, neurons ...int) (*Network, error) {
 		}
 		if i != 0 {
 			//if it's not the first or last layer, layer type will be 1, or "hidden"
-			res[i] = NewLayer(neurons[i], neurons[i+1], 1)
+			res[i] = NewLayer(neurons[i], neurons[i+1], 1, config.ActivationType)
 		} else {
 			//if it *is* the first layer, then layer type will be 0, or "synapse"
-			res[i] = NewLayer(neurons[i], neurons[i+1], 0)
+			res[i] = NewLayer(neurons[i], neurons[i+1], 0, config.ActivationType)
 		}
 		size += neurons[i]
 	}
 
 	//I should probably have an "OutputLayer" type, instead of doing this
-	res[len(res)-1] = NewLayer(neurons[len(neurons)-1], 0, 2)
+	res[len(res)-1] = NewLayer(neurons[len(neurons)-1], 0, 2, config.OutputActivationType)
 
 	size += neurons[len(neurons)-1]
 

@@ -162,7 +162,7 @@ func (n *Network) Descend(expected, output []float64) {
 	}
 	//for each layer
 	for i := len(n.Layers) - 2; i >= 0; i-- {
-		n.Layers[i].Descend()
+		//n.Layers[i].Descend()
 	}
 	//find the derivative with respect to each weight
 	//

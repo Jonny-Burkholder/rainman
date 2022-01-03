@@ -1,6 +1,6 @@
 package neuralnetwork
 
-var costFunctions = []string{"Mean Squared"} //for human reference
+var costFunctions = []string{"Mean Squared", "Cross-Entropy"} //for human reference
 
 type Config struct {
 	ActivationType       int //we'll have a slice of activation types somewhere. I mean really the only point of having them though is for human benefit, a simple int works just fine

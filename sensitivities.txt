@@ -1,0 +1,10 @@
+Sensitivity to weight = 
+
+--Derivative of cost function-- --Derivative of neuron activation--  --Derivative of neuron input-- 
+
+2(actualOutput - desiredOutput) * activationPrime(neuronInput) * (Z(L)Prime)
+
+
+
+Sensitivity to Bias = 
+

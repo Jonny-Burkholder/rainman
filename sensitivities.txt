@@ -8,3 +8,4 @@ Sensitivity to weight =
 
 Sensitivity to Bias = some crap
 
+ --Derivative of cost function-- --Derivative of neuron activation--

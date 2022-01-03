@@ -94,29 +94,58 @@ func (l *Layer) ActivatePrime(z float64) float64 {
 	return res
 }
 
-//WeightPrime takes a slice of float64 as its input. This slice represents
+//WeighPrimes takes a slice of float64 as its input. This slice represents
 //the derivative of the cost of each neuron in this layer, which has
 //already been calculated elsewhere. The function returns a slice of
-//float64 representing a hint, if you will, of how much to nudge the cost
-//associated with this slice of relationships
-func (l *Layer) WeightPrime(costPrime []float64, previous *Layer) []float64 {
+//float64 representing a hint, if you will, of how much to nudge the
+//weights
+func (l *Layer) WeightPrime(costPrime []float64, previous *Layer) [][]float64 { //first return is weight, second return is bias
 	//res represents... something. a slice of somethings
-	res := make([]float64, len(l.Neurons))
+	res := make([][]float64, len(previous.Neurons))
 
-	//for each neuron
-	for i := 0; i < len(l.Neurons); i++ {
-		//for each weight being input into the neuron
-		nPrime := l.ActivatePrime(previous.Output[i])
-		for _, w := range previous.Primes[i] {
-			//costprime[i] * n.activationPrime * z(l)prime
-			res[i] += costPrime[i] * nPrime * w
+	//for each weight in the previous layer, which we can break down as
+	//for each neuron in the last layer
+	for i := 0; i < len(previous.Neurons); i++ {
+		//working just like we did in the NewLayer function
+		res[i] = make([]float64, len(l.Neurons))
+		//for each output associated with that neuron...
+		for j := 0; j < len(l.Neurons); j++ {
+			aPrime := l.ActivatePrime(previous.Output[i])
+			for _, inputPrime := range previous.Primes[i] {
+				//derivative of the cost of the current neuron output times
+				//derivative of the activation of the current neuron times
+				//the derivative of the input of the current neuron
+				//j is the current neuron of the current layer
+				res[i][j] += costPrime[j] * aPrime * inputPrime
+			}
 		}
-
 	}
 	return res
 }
 
-//BiasPrime does the same as WeightPrime, but with biases. Should be significantly easier
-func (l *Layer) BiasPrime() []float64 {
-	return []float64{}
+//BiasPrime does the same thing as WeightPrime, but for Biases. And also on the current
+//layer, not the previous one? I think
+func (l *Layer) BiasPrime(costPrime []float64, previous *Layer) {
+	res := make([]float64, len(l.Neurons))
+
+	for i := 0; i < len(l.Neurons); i++ {
+		res[i] = costPrime[i] * l.ActivatePrime(previous.Output[i])
+	}
+
+}
+
+//Adjust takes in two slices, which are the derivative of the weights
+//and biases of the layer, and a float, which is the learning rate. The
+//weights and biases are then adjusted by subtracting their derivative
+//multiplied by the learning rate
+func (l *Layer) Adjust(weightPrime [][]float64, biasPrime []float64, rate float64) error { //gut check says there should be an error here
+
+	for i := 0; i < len(l.Neurons); i++ {
+		l.Neurons[i].reBias(biasPrime[i] * rate)
+		for j := 0; j < len(l.Weights[i]); j++ {
+			l.Weights[i][j] -= (weightPrime[i][j] * rate)
+		}
+	}
+
+	return nil
 }

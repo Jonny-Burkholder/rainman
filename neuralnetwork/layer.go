@@ -84,7 +84,7 @@ func (l *Layer) Activate(inputs []float64) []float64 {
 //already been calculated elsewhere. The function returns a slice of
 //float64 representing a hint, if you will, of how much to nudge the cost
 //associated with this slice of relationships
-func (l *Layer) Descend(costPrime []float64) []float64 {
+func (l *Layer) WeightPrime(costPrime []float64) []float64 {
 	//res represents... something. a slice of somethings
 	res := make([]float64, len(l.Neurons))
 

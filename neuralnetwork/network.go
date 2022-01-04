@@ -21,17 +21,14 @@ var nilNetwork = &Network{}
 
 //Network will be a series of layers of neurons. Yeah
 type Network struct {
-	Name        string
-	ID          float64
-	Config      *Config
-	CurrentStep float64 //the current step size, after adjusting for learning rate, etc
-	Layers      []*Layer
-	Size        int //how many neurons are in the network. Int may be too small for this
-	Bias        float64
-	Clusters    []*Cluster          //Clusters represent information that is yet uncategorized, but is clustered together
-	Children    []*Network          //To pass along for more specialized recognition
-	OutPuts     map[int]interface{} //Terrible! Just terrible
-	Cost        float64             //the cost of the network
+	Name   string
+	ID     float64
+	Config *Config
+	//CurrentStep float64 //the current step size, after adjusting for learning rate, etc
+	Layers []*Layer
+	Size   int //how many neurons are in the network. Int may be too small for this
+	//we're going to forget about this network feeding forward into child networks for now
+	//and just focus on getting it working
 }
 
 //NewNetwork takes a config file and several integers as arguments, and produces a neural
@@ -69,13 +66,11 @@ func NewNetwork(name string, config *Config, neurons ...int) (*Network, error) {
 	rand.Seed(time.Now().UnixNano())
 
 	return &Network{
-		Name:        name,
-		ID:          rand.Float64(),
-		Config:      config,
-		CurrentStep: config.BaseStepSize,
-		Layers:      res,
-		Size:        size,
-		Bias:        rand.Float64(),
+		Name:   name,
+		ID:     rand.Float64(),
+		Config: config,
+		Layers: res,
+		Size:   size,
 	}, nil
 }
 

@@ -48,21 +48,21 @@ func (n *Network) LoadTrainingSet(path string) (*TrainingSet, error) {
 //that's the default until I learn other gradient descent methods.
 //Honestly I'm starting to feel like the distinction between forward
 //feeding and backpropogation is largely academic
-func (n *Network) Train(t *TrainingSet) {
-	var avgErr float64
-	var iteration int
+func (n *Network) Train(t *TrainingSet) string {
+	avgErr := n.Config.TrainingCondition * 2
+	iteration := 0
 	for avgErr > n.Config.TrainingCondition && iteration <= n.Config.MaxSteps { //whichever comes first
 		//for each training data
-		for _, data := range t.Data {
+		for i, data := range t.Data {
 			//randomly select instances to feed forward into the network
 			indexes := n.Stochastic(len(data.Data))
-			for _, i := range indexes {
+			for _, j := range indexes {
 				//add up the cost and cost prime of each of those instances
-				res, _ := n.Activate(data.Data[i].Inputs)
-				for j := 0; j < len(res); j++ {
-					diff := data.Data[i].Expected[j] - res[j]
-					data.Cost[j] += diff * diff
-					data.CostPrime[j] += diff * 2
+				res, _ := n.Activate(data.Data[j].Inputs)
+				for k := 0; k < len(res); k++ {
+					diff := data.Data[i].Expected[k] - res[k]
+					data.Cost[i] += diff * diff
+					data.CostPrime[i] += diff * 2
 				}
 			}
 			length := float64(len(indexes))
@@ -74,8 +74,9 @@ func (n *Network) Train(t *TrainingSet) {
 			n.BackPropogate(data.Cost, data.CostPrime)
 			//some may argue to use one trainingdata at a time, I guess we can play around with it
 		}
+		iteration++
 	}
-	fmt.Printf("Network successfully trained to %v over %d iterations\n", avgErr, iteration) //I don't remember how to control the precision of floats with printf lol
+	return fmt.Sprintf("Network successfully trained to an error of %v over %d iterations\n", avgErr, iteration) //I don't remember how to control the precision of floats with printf lol
 }
 
 //Stochastic takes an integer l, and returns a slice of indeces bounded between zero and l

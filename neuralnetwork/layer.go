@@ -15,7 +15,6 @@ type Layer struct {
 	Neurons        []*Neuron
 	Weights        [][]float64 //Matrix of connections to next layer
 	Output         []float64   //need some persistence here to backpropogate
-	Primes         [][]float64 //a slice of the derivative of activations for each weight by output neuron. gonna be so confusing
 }
 
 //NewLayer takes two inputs, nsize and wsize, where nsize is the number of neurons
@@ -53,6 +52,7 @@ func NewLayer(nsize, wsize, ltype, atype int) *Layer {
 		ActivationType: atype,
 		Neurons:        n,
 		Weights:        w,
+		Output:         make([]float64, wsize),
 	}
 
 }
@@ -78,6 +78,7 @@ func (l *Layer) Activate(inputs []float64) []float64 {
 		res := make([]float64, len(inputs))
 		for i := 0; i < len(inputs); i++ {
 			res[i] = l.Neurons[i].Fire(inputs[i])
+			l.Output[i] = res[i]
 		}
 		return res
 	}
@@ -110,14 +111,13 @@ func (l *Layer) WeightPrime(costPrime []float64, previous *Layer) [][]float64 { 
 		res[i] = make([]float64, len(l.Neurons))
 		//for each output associated with that neuron...
 		for j := 0; j < len(l.Neurons); j++ {
-			aPrime := l.ActivatePrime(previous.Output[i])
-			for _, inputPrime := range previous.Primes[i] {
-				//derivative of the cost of the current neuron output times
-				//derivative of the activation of the current neuron times
-				//the derivative of the input of the current neuron
-				//j is the current neuron of the current layer
-				res[i][j] += costPrime[j] * aPrime * inputPrime
-			}
+			z := previous.Output[j]
+			aPrime := l.ActivatePrime(z)
+			//derivative of the cost of the current neuron output times
+			//derivative of the activation of the current neuron times
+			//the derivative of the input of the current neuron
+			//j is the current neuron of the current layer
+			res[i][j] += costPrime[j] * aPrime * z
 		}
 	}
 	return res

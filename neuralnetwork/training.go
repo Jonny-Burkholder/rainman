@@ -65,6 +65,11 @@ func (n *Network) Train(t *TrainingSet) {
 					data.CostPrime[j] += diff * 2
 				}
 			}
+			length := float64(len(indexes))
+			for i := 0; i < len(data.Cost); i++ {
+				data.Cost[i] /= length
+				data.CostPrime[i] /= length
+			}
 			//regressively pass these values up through the network to make adjustments
 			n.BackPropogate(data.Cost, data.CostPrime)
 			//some may argue to use one trainingdata at a time, I guess we can play around with it

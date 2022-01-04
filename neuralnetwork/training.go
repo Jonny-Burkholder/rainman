@@ -1,5 +1,11 @@
 package neuralnetwork
 
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
+
 var NilTrainingSet = &TrainingSet{}
 
 //TrainingInstance is a single instance of training data. So this might
@@ -45,6 +51,32 @@ func (n *Network) Train(t *TrainingSet) {
 	var avgErr float64
 	var iteration int
 	for avgErr > n.Config.TrainingCondition && iteration <= n.Config.MaxSteps { //whichever comes first
-
+		//for each training data
+		//randomly select instances to feed forward into the network
+		//add up the cost and cost prime of each of those instances
+		//regressively pass these values up through the network to make adjustments
+		//some may argue to use one trainingdata at a time, I guess we can play around with it
 	}
+	fmt.Printf("Network successfully trained to %v over %d iterations\n", avgErr, iteration) //I don't remember how to control the precision of floats with printf lol
+}
+
+//Stochastic takes an integer l, and returns a slice of indeces bounded between zero and l
+//The resultant slice is the fixed length of data points used for stochastic gradient descent,
+//and is used to
+func (n *Network) Stochastic(l int) []int {
+	rand.Seed(time.Now().UnixNano())
+	temp := make(map[int]bool)
+	res := make([]int, n.Config.Stochastic)
+	for i := 0; i < l; i++ {
+		//if the number is already in use, loop until a unique number is reached
+		for {
+			num := rand.Intn(l)
+			if _, ok := temp[num]; ok == !true {
+				res[i] = num
+				temp[num] = true
+				break
+			}
+		}
+	}
+	return res
 }

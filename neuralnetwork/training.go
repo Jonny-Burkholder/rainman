@@ -41,4 +41,10 @@ func (n *Network) LoadTrainingSet(path string) (*TrainingSet, error) {
 //that's the default until I learn other gradient descent methods.
 //Honestly I'm starting to feel like the distinction between forward
 //feeding and backpropogation is largely academic
-func (n *Network) Train(t *TrainingSet)
+func (n *Network) Train(t *TrainingSet) {
+	var avgErr float64
+	var iteration int
+	for avgErr > n.Config.TrainingCondition && iteration <= n.Config.MaxSteps { //whichever comes first
+
+	}
+}

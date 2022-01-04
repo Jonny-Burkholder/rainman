@@ -74,37 +74,11 @@ func NewNetwork(name string, config *Config, neurons ...int) (*Network, error) {
 	}, nil
 }
 
-//Compress takes input data that's too large for the network and compresses it into something
-//more manageable. I'm assuming this will only be necessary for truly massive pieces of data,
-//as the networks should, for the most part, be able to scale to their input
-func (n *Network) Compress(inputs []float64) ([]float64, error) {
-	if len(inputs) > n.Size {
-		res := make([]float64, n.Size) //n.Size does *not* work here. We'll have to add another argument to the function
-		//do stuff
-		return res, nil
-	}
-	return []float64{}, errAlreadySized
-}
-
-//Upscale takes an input that's too small and interpolates intermediate values
-func (n *Network) Upscale(inputs []float64) ([]float64, error) {
-	if len(inputs) < n.Size {
-		res := make([]float64, n.Size)
-		//do magic
-		return res, nil
-	}
-	return []float64{}, errAlreadySized
-}
-
 //Resize changes the size of the neural network, probably to match input size
+//Even though, you know, that makes no freaking sense
 func (n *Network) Resize(i int) error {
 	//No idea how this will work, or if it's even a good idea
 	return nil
-}
-
-//StepSize takes a slope as an input, and returns a step size
-func (n *Network) StepSize(s float64) float64 {
-	return s * n.Config.LearningRate
 }
 
 //Stochastic takes an integer l, and returns a slice of indeces bounded between zero and l

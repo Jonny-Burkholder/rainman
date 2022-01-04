@@ -153,17 +153,9 @@ func (l *Layer) Adjust(weightPrime [][]float64, biasPrime []float64, rate float6
 //Descend puts all the pieces together. It also needs to make a return
 //so that that can be input for the next layer, but I don't know how
 //to do that
-func (l *Layer) Descend(cost, costPrime []float64, previous *Layer, rate float64) ([]float64, []float64) {
+func (l *Layer) Descend(cost, costPrime []float64, previous *Layer, rate float64) {
 	weightPrime := l.WeightPrime(cost, previous)
 	biasPrime := l.BiasPrime(costPrime, previous)
 	l.Adjust(weightPrime, biasPrime, rate)
-	//magically pull another cost slice out of our butts. I honestly
-	//have no idea how that's suposed to work, unless we somehow come
-	//up with another slcie of expected values for the previous layer,
-	//which is 100% doable, but I just feel like I remember there being
-	//an easier, more mathematical way to derive that. And besides, that
-	//wouldn't work anyway, because you need the average cost across all
-	//training values. Are the training examples supposed to include the
-	//expected value of every neuron? That doesn't sound right
-	return []float64{}, []float64{}
+	//so I don't think we return anything here, I think we just use the overall network cost every time
 }

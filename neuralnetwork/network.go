@@ -104,7 +104,7 @@ func (n *Network) Activate(a []float64) ([]float64, error) {
 //I don't actually know how to do this yet
 func (n *Network) BackPropogate(cost, costPrime []float64) {
 	for i := len(n.Layers) - 1; i > 0; i-- {
-		cost, costPrime := n.Layers[i].Descend(cost, costPrime, n.Layers[i-1], n.Config.LearningRate)
+		n.Layers[i].Descend(cost, costPrime, n.Layers[i-1], n.Config.LearningRate)
 	}
 }
 

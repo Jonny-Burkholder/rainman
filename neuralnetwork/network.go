@@ -25,8 +25,10 @@ type Network struct {
 	ID     float64
 	Config *Config
 	//CurrentStep float64 //the current step size, after adjusting for learning rate, etc
-	Layers []*Layer
-	Size   int //how many neurons are in the network. Int may be too small for this
+	InputLayer  *Layer
+	Layers      []*Layer
+	OutputLayer *Layer
+	Size        int //how many neurons are in the network. Int may be too small for this
 	//we're going to forget about this network feeding forward into child networks for now
 	//and just focus on getting it working
 }
@@ -81,27 +83,6 @@ func (n *Network) Resize(i int) error {
 	return nil
 }
 
-//Stochastic takes an integer l, and returns a slice of indeces bounded between zero and l
-//The resultant slice is the fixed length of data points used for stochastic gradient descent,
-//and is used to
-func (n *Network) Stochastic(l int) []int {
-	rand.Seed(time.Now().UnixNano())
-	temp := make(map[int]bool)
-	res := make([]int, n.Config.Stochastic)
-	for i := 0; i < l; i++ {
-		//if the number is already in use, loop until a unique number is reached
-		for {
-			num := rand.Intn(l)
-			if _, ok := temp[num]; ok == !true {
-				res[i] = num
-				temp[num] = true
-				break
-			}
-		}
-	}
-	return res
-}
-
 //Activate takes a slice of inputs and sends the activations
 //layer by layer through the network, until the output is reached
 func (n *Network) Activate(a []float64) ([]float64, error) {
@@ -121,9 +102,9 @@ func (n *Network) Activate(a []float64) ([]float64, error) {
 
 //Descend does the least squares gradient descent thing
 //I don't actually know how to do this yet
-func (n *Network) BackPropogate() {
+func (n *Network) BackPropogate(cost, costPrime []float64) {
 	for i := len(n.Layers) - 1; i > 0; i-- {
-		n.Layers[i].Descend(n.Layers[i-1], n.Config.LearningRate)
+		cost, costPrime := n.Layers[i].Descend(cost, costPrime, n.Layers[i-1], n.Config.LearningRate)
 	}
 }
 

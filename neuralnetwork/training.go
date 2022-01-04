@@ -21,8 +21,9 @@ type TrainingInstance struct {
 //TrainingData is a collection of instances of a single type of data. So
 //This would be a slice of pictures only of cats, or only of faces
 type TrainingData struct {
-	Data []*TrainingInstance
-	Cost []float64
+	Data      []*TrainingInstance
+	Cost      []float64
+	CostPrime []float64
 }
 
 //TrainingSet is a collection of training data. This is the data type that will
@@ -52,10 +53,22 @@ func (n *Network) Train(t *TrainingSet) {
 	var iteration int
 	for avgErr > n.Config.TrainingCondition && iteration <= n.Config.MaxSteps { //whichever comes first
 		//for each training data
-		//randomly select instances to feed forward into the network
-		//add up the cost and cost prime of each of those instances
-		//regressively pass these values up through the network to make adjustments
-		//some may argue to use one trainingdata at a time, I guess we can play around with it
+		for _, data := range t.Data {
+			//randomly select instances to feed forward into the network
+			indexes := n.Stochastic(len(data.Data))
+			for _, i := range indexes {
+				//add up the cost and cost prime of each of those instances
+				res, _ := n.Activate(data.Data[i].Inputs)
+				for j := 0; j < len(res); j++ {
+					diff := data.Data[i].Expected[j] - res[j]
+					data.Cost[j] += diff * diff
+					data.CostPrime[j] += diff * 2
+				}
+			}
+			//regressively pass these values up through the network to make adjustments
+			n.BackPropogate(data.Cost, data.CostPrime)
+			//some may argue to use one trainingdata at a time, I guess we can play around with it
+		}
 	}
 	fmt.Printf("Network successfully trained to %v over %d iterations\n", avgErr, iteration) //I don't remember how to control the precision of floats with printf lol
 }

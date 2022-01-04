@@ -17,6 +17,7 @@ type Layer struct {
 	Output         []float64   //need some persistence here to backpropogate
 	Primes         [][]float64 //a slice of the derivative of activations for each weight by output neuron. gonna be so confusing
 	Cost           []float64
+	CostPrime      []float64 //might be able to handle this at the training level instead of layer levl
 }
 
 //NewLayer takes two inputs, nsize and wsize, where nsize is the number of neurons
@@ -156,6 +157,6 @@ func (l *Layer) Adjust(weightPrime [][]float64, biasPrime []float64, rate float6
 //to do that
 func (l *Layer) Descend(previous *Layer, rate float64) {
 	weightPrime := l.WeightPrime(l.Cost, previous)
-	biasPrime := l.BiasPrime(l.Cost, previous) //wait, this is wrong, l.Cost isn't cost prime
+	biasPrime := l.BiasPrime(l.CostPrime, previous)
 	l.Adjust(weightPrime, biasPrime, rate)
 }

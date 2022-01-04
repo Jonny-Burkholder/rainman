@@ -156,6 +156,6 @@ func (l *Layer) Adjust(weightPrime [][]float64, biasPrime []float64, rate float6
 //to do that
 func (l *Layer) Descend(previous *Layer, rate float64) {
 	weightPrime := l.WeightPrime(l.Cost, previous)
-	biasPrime := l.BiasPrime(l.Cost, previous)
+	biasPrime := l.BiasPrime(l.Cost, previous) //wait, this is wrong, l.Cost isn't cost prime
 	l.Adjust(weightPrime, biasPrime, rate)
 }

@@ -16,6 +16,7 @@ type Layer struct {
 	Weights        [][]float64 //Matrix of connections to next layer
 	Output         []float64   //need some persistence here to backpropogate
 	Primes         [][]float64 //a slice of the derivative of activations for each weight by output neuron. gonna be so confusing
+	Cost           []float64
 }
 
 //NewLayer takes two inputs, nsize and wsize, where nsize is the number of neurons
@@ -125,13 +126,13 @@ func (l *Layer) WeightPrime(costPrime []float64, previous *Layer) [][]float64 { 
 
 //BiasPrime does the same thing as WeightPrime, but for Biases. And also on the current
 //layer, not the previous one? I think
-func (l *Layer) BiasPrime(costPrime []float64, previous *Layer) {
+func (l *Layer) BiasPrime(costPrime []float64, previous *Layer) []float64 {
 	res := make([]float64, len(l.Neurons))
 
 	for i := 0; i < len(l.Neurons); i++ {
 		res[i] = costPrime[i] * l.ActivatePrime(previous.Output[i])
 	}
-
+	return res
 }
 
 //Adjust takes in two slices, which are the derivative of the weights
@@ -148,4 +149,13 @@ func (l *Layer) Adjust(weightPrime [][]float64, biasPrime []float64, rate float6
 	}
 
 	return nil
+}
+
+//Descend puts all the pieces together. It also needs to make a return
+//so that that can be input for the next layer, but I don't know how
+//to do that
+func (l *Layer) Descend(previous *Layer, rate float64) {
+	weightPrime := l.WeightPrime(l.Cost, previous)
+	biasPrime := l.BiasPrime(l.Cost, previous)
+	l.Adjust(weightPrime, biasPrime, rate)
 }

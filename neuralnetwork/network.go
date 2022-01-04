@@ -152,20 +152,10 @@ func (n *Network) Activate(a []float64) ([]float64, error) {
 
 //Descend does the least squares gradient descent thing
 //I don't actually know how to do this yet
-func (n *Network) Descend(expected, output []float64) {
-	//Reset the network cost to zero
-	n.Cost = 0
-	//Calculate the current network cost
-	for i := 0; i < len(expected) && i < len(output); i++ {
-		r := expected[i] - output[i]
-		n.Cost += r * r
+func (n *Network) BackPropogate() {
+	for i := len(n.Layers) - 1; i > 0; i-- {
+		n.Layers[i].Descend(n.Layers[i-1], n.Config.LearningRate)
 	}
-	//for each layer
-	for i := len(n.Layers) - 2; i >= 0; i-- {
-		//n.Layers[i].Descend()
-	}
-	//find the derivative with respect to each weight
-	//
 }
 
 //String is a stringer function for a network

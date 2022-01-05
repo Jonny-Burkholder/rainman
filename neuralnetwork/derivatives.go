@@ -68,18 +68,9 @@ func LeakyRelu6Prime(x, leak float64) float64 {
 
 //SwishPrime returns the derivative of the
 //swish activation function
-func (n *Neuron) SwishPrime(x float64) float64 {
+func SwishPrime(x float64) float64 {
 	//eventually needs to include a constant!
 	//Also this function feels like it would get bogged
 	//down pretty quickly as you add neurons
 	return Swish(x) + (Sigmoid(x) * (1 - Swish(x)))
 }
-
-//CostOverActivation returns the derivative of the cost with respect to the
-//neuron's activation
-func (n *Neuron) CostOverActivation(output, expected float64) float64 {
-	r := output - expected
-	return 2 * (r * r)
-}
-
-//

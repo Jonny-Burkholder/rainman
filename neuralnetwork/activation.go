@@ -1,8 +1,38 @@
 package neuralnetwork
 
-import "math"
+import (
+	"math"
+)
 
 //Activation will handle the different activation types
+
+var activationTypes = []string{
+	"sigmoid", "relu", "linear", "binary-step", "tanh", "arctan",
+	"leakyrelu", "leakyrelu6", "swish", "elu", "gelu", "selu",
+}
+
+func getActivation(activation int) func(float64) float64 {
+	switch activation {
+	case 0:
+		return Sigmoid
+	case 1:
+		return Relu
+	case 2:
+		return Linear
+	case 3:
+		return BinaryStep
+	case 4:
+		return Tanh
+	case 5:
+		return ArcTan
+	case 6:
+		return LeakyRelu
+	case 7:
+		return LeakyRelu6
+	default:
+		return LeakyRelu6
+	}
+}
 
 //Sigmoid takes an input a and applies the logistic sigmoid
 //function, returning an activation between 0 and 1

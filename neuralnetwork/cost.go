@@ -1,12 +1,11 @@
 package neuralnetwork
 
-//meanSquared does the whole, you know, mean
-//squared cost thing. Not really sure this
-//needs to be a method at all. Anyway, it takes
-//in two slices, the actual and expected values for
-//a layer of neurons, and it spits out not only the
-//cost for each of those values, but the derivative as well
-func (n *Network) meanSquared(actual, expected []float64) ([]float64, []float64) {
+//meanSquared calculates a network cost by taking in a slice of predicted
+//values and measuring them against a slice of expected values, squaring and
+//summing each difference. It returns the cost and costPrime of the network
+//for a given training input
+//Even this I may change to take just one value, rather than a slice
+func meanSquared(actual, expected []float64) ([]float64, []float64) {
 	//crash if len(actual) != len(expected)? Who knows
 
 	cost := make([]float64, len(actual))

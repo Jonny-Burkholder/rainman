@@ -4,7 +4,7 @@ var costFunctions = []string{"Mean Squared", "Cross-Entropy"} //for human refere
 
 type Config struct {
 	ActivationType       int //we'll have a slice of activation types somewhere. I mean really the only point of having them though is for human benefit, a simple int works just fine
-	OutputActivationType int //default will be the same as the main activation type, though it should probably be sigmoid
+	OutputActivationType int //default for this will be sigmoid
 	CostFunction         int
 	MaxSteps             int
 	Stochastic           int

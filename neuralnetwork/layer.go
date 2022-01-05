@@ -25,5 +25,16 @@ func newLayer(inputs, outputs, activation int) *layer {
 
 //fire takes inputs and does the thing
 func (l *layer) fire() { //return the outputs here?
-	l.Outputs = *DotProduct(l.Inputs, l.)
+	res := *DotProduct(l.Inputs, l.Weights)
+	l.Outputs = AddMatrix(res, l.Biases)
+}
+
+//stepBack takes in a slice representing the cost of the
+//neural network. The function then finds the derivative of
+//the cost with respect to the layer's activations and biases,
+//respectively, and takes a small step towards the gradient's
+//local minimum
+func (l *layer) stepBack(cost []float64) {
+	//I'm not super worried about getting the calculus right here
+	//just yet, just trying to get the structure back online
 }

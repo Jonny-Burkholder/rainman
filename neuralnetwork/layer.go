@@ -34,7 +34,7 @@ func (l *layer) fire() { //return the outputs here?
 //the cost with respect to the layer's activations and biases,
 //respectively, and takes a small step towards the gradient's
 //local minimum
-func (l *layer) stepBack(cost []float64) {
+func (l *layer) stepBack(cost, costPrime []float64) {
 	//I'm not super worried about getting the calculus right here
 	//just yet, just trying to get the structure back online
 }

@@ -43,3 +43,22 @@ func NewNetwork(config *Config, layout ...int) (*Network, error) {
 	}
 	return &res, nil
 }
+
+//Backpropagate will take a slice of expected values and compare
+//it to the network's output to calculate the cost using the
+//config's cost function. It will then send this cost up through
+//each layer using the backpropagation algorithm
+func (n *Network) Backpropagate(expected []float64) {
+	cost, costPrime := meanSquared(*n.OutputLayer.Outputs, expected)
+
+	//as far as I'm aware, there's really no good reason to do
+	//this all in reverse. Heck, we could do em concurrently if
+	//my understanding of the thing. But hey, I'll stick with
+	//convention until I'm comfortable enough with the calculus
+	//to be positive
+	n.OutputLayer.stepBack(cost, costPrime)
+	for i := len(n.HiddenLayers) - 1; i >= 0; i-- {
+		n.HiddenLayers[i].stepBack(cost, costPrime)
+	}
+	n.InputLayer.stepBack(cost, costPrime)
+}

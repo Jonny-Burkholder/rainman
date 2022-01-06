@@ -21,6 +21,7 @@ func TestMatrixSize(t *testing.T) {
 	m.Reset()
 	fmt.Printf("[reset] matrix.size=%d (bytes)\n", m.Size())
 
+	// FYI: a 256x256 matrix is about 0.5MB, so it's still fairly small
 	m = NewMatrix(4, 4, nil)
 	fmt.Printf("[set X] matrix.size=%d (bytes)\n", m.Size())
 }

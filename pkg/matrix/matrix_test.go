@@ -5,6 +5,26 @@ import (
 	"testing"
 )
 
+func TestMatrixSize(t *testing.T) {
+
+	dat := dataSetA
+	m := NewMatrix(dat.Rows, dat.Cols, dat.Data)
+	fmt.Printf("[set A] matrix.size=%d (bytes)\n", m.Size())
+
+	m.Reset()
+	fmt.Printf("[reset] matrix.size=%d (bytes)\n", m.Size())
+
+	dat = dataSetB
+	m = NewMatrix(dat.Rows, dat.Cols, dat.Data)
+	fmt.Printf("[set B] matrix.size=%d (bytes)\n", m.Size())
+
+	m.Reset()
+	fmt.Printf("[reset] matrix.size=%d (bytes)\n", m.Size())
+
+	m = NewMatrix(4, 4, nil)
+	fmt.Printf("[set X] matrix.size=%d (bytes)\n", m.Size())
+}
+
 func TestNewMatrix(t *testing.T) {
 
 	rows, cols := 3, 2
@@ -94,7 +114,7 @@ func TestMatrix_CloneFrom(t *testing.T) {
 		t.Fail()
 	}
 
-	if !(m.Equal(m2) && m2.Equal(m)) {
+	if !(m.IsEqual(m2) && m2.IsEqual(m)) {
 		t.Fail()
 	}
 
@@ -104,7 +124,6 @@ func TestMatrix_CloneFrom(t *testing.T) {
 	}
 
 	if m2.GetAt(0, 1) == 255.55 {
-		fmt.Println(">>>>>>>>>>>> DEBUG")
 		t.Fail()
 	}
 
@@ -530,7 +549,7 @@ func TestMatrixCopyOf(t *testing.T) {
 		t.Fail()
 	}
 
-	if !(mA.Equal(mB) && mB.Equal(mA)) {
+	if !(mA.IsEqual(mB) && mB.IsEqual(mA)) {
 		t.Fail()
 	}
 
@@ -567,7 +586,7 @@ func TestMatrixDotProduct(t *testing.T) {
 
 	mD := NewMatrix(mA.Rows, mB.Cols, dotProdSetASetBData)
 
-	if !(mD.Equal(mC) && mC.Equal(mD)) {
+	if !(mD.IsEqual(mC) && mC.IsEqual(mD)) {
 		t.Fail()
 	}
 }
@@ -590,7 +609,7 @@ func TestMatrixAdd(t *testing.T) {
 
 	mD := NewMatrix(3, 2, addSetASetBData)
 
-	if !(mD.Equal(mC) && mC.Equal(mD)) {
+	if !(mD.IsEqual(mC) && mC.IsEqual(mD)) {
 		t.Fail()
 	}
 
@@ -614,7 +633,7 @@ func TestMatrixSub(t *testing.T) {
 
 	mD := NewMatrix(3, 2, subSetASetBData)
 
-	if !(mD.Equal(mC) && mC.Equal(mD)) {
+	if !(mD.IsEqual(mC) && mC.IsEqual(mD)) {
 		t.Fail()
 	}
 

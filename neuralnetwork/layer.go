@@ -9,7 +9,7 @@ type layer struct {
 	Weights    *matrix.Matrix
 	Biases     *matrix.Matrix
 	Outputs    *matrix.Matrix
-	Activation func(float64) float64
+	Activation activation
 }
 
 //newLayer returns a new layer with a given number of inputs

@@ -5,16 +5,18 @@ that was stupid so I changed it*/
 
 //SigmoidPrime returns the derivative for the
 //logistic sigmoid activation function
-func SigmoidPrime(x float64) float64 {
-	return Sigmoid(x) * (1 - Sigmoid(x))
+func (s *Sigmoid) Derivative(x float64) float64 {
+	return s.fire(x) * (1 - s.fire(x))
 }
 
 //ReluPrime returns the derivative for the
 //relu activation function. It's kind of
 //lame, to be honest
-func ReluPrime(x float64) float64 {
+func (r *Relu) Derivative(x float64) float64 {
 	if x > 0 {
 		return 1
+	} else if r.Leak {
+		return r.LeakAmnt
 	} else {
 		return 0
 	}
@@ -24,7 +26,7 @@ func ReluPrime(x float64) float64 {
 
 //BinaryStepPrime returns the derivative of
 //the binary step activation function
-func BinaryStepPrime(x float64) float64 {
+func (b *BinaryStep) Derivative(x float64) float64 {
 	if x > 0 {
 		return 1
 	} else {
@@ -34,43 +36,21 @@ func BinaryStepPrime(x float64) float64 {
 
 //TanhPrime returns the derivative of the
 //hyperbolic tangent activation function
-func TanhPrime(x float64) float64 {
-	res := Tanh(x)
+func (t *Tanh) Derivative(x float64) float64 {
+	res := t.fire(x)
 	res *= res //should be significantly faster than doing the tanh function twice
 	return 1 - res
 }
 
 //ArcTanPrime returns the derivative of the
-//ArcTan activation function
-func ArcTanPrime() {}
-
-//LeakyReluPrime returns the derivative of
-//the leaky relu activation function
-func LeakyReluPrime(x, leak float64) float64 {
-	if x > 0 {
-		return 1
-	} else {
-		return leak
-	}
-}
-
-//LeakyRelu6Prime returns the derivative of the
-//leaky relu6 activation function, which just so
-//happens to be the exact same derivative as the
-//leaky relu function
-func LeakyRelu6Prime(x, leak float64) float64 {
-	if x > 0 {
-		return 1
-	} else {
-		return leak
-	}
-}
+//ArcTan activation ft.fireion
+func (arc *ArcTan) Derivative() {}
 
 //SwishPrime returns the derivative of the
 //swish activation function
-func SwishPrime(x float64) float64 {
+func (s *Swish) Derivative(x float64) float64 {
 	//eventually needs to include a constant!
 	//Also this function feels like it would get bogged
 	//down pretty quickly as you add neurons
-	return Swish(x) + (Sigmoid(x) * (1 - Swish(x)))
+	return s.fire(x) + (s.Sigmoid.fire(x) * (1 - s.fire(x)))
 }

@@ -11,39 +11,67 @@ var activationTypes = []string{
 	"leakyrelu", "leakyrelu6", "swish", "elu", "gelu", "selu",
 }
 
-func getActivation(activation int) func(float64) float64 {
+type activation interface {
+	fire(float64) float64
+}
+
+type Sigmoid struct{}
+
+//decided instead of 3 different Relu activations, we could
+//just have one modular relu activation that covers any base
+//want
+type Relu struct {
+	Leak     bool
+	Cap      bool
+	LeakAmnt float64
+	CapAmnt  float64
+}
+
+type Linear struct{}
+
+type BinaryStep struct{}
+
+type Tanh struct{}
+
+type ArcTan struct{}
+
+type Swish struct {
+	Sigmoid *Sigmoid
+}
+
+func getActivation(activation int) activation {
 	switch activation {
 	case 0:
-		return Sigmoid
+		return &Sigmoid{}
 	case 1:
-		return Relu
+		return &Relu{}
 	case 2:
-		return Linear
+		return &Linear{}
 	case 3:
-		return BinaryStep
+		return &BinaryStep{}
 	case 4:
-		return Tanh
+		return &Tanh{}
 	case 5:
-		return ArcTan
+		return &ArcTan{}
 	case 6:
-		return LeakyRelu
-	case 7:
-		return LeakyRelu6
+		return &Swish{
+			Sigmoid: &Sigmoid{},
+		}
 	default:
-		return LeakyRelu6
+		return &Relu{}
 	}
 }
 
 //Sigmoid takes an input a and applies the logistic sigmoid
 //function, returning an activation between 0 and 1
-func Sigmoid(a float64) float64 {
+func (s *Sigmoid) fire(a float64) float64 {
 	return math.Exp(a) / (math.Exp(a) + 1)
 }
 
 //Relu is a nonlinear activation function that takes an input
 //a, and returns a if the input is greater than zero. Otherwise
 //the function returns 0
-func Relu(a float64) float64 {
+func (r *Relu) fire(a float64) float64 {
 	if a < 0 {
 		return 0
 	}
@@ -51,13 +79,13 @@ func Relu(a float64) float64 {
 }
 
 //Linear uses a linear activation function
-func Linear(a float64) float64 {
+func (l *Linear) fire(a float64) float64 {
 	return a
 }
 
 //Binary step takes an input a and returns 1 if a is greater
 //than zero. Otherwise the function returns 0
-func BinaryStep(a float64) float64 {
+func (b *BinaryStep) fire(a float64) float64 {
 	if a < 0 {
 		return 0
 	}
@@ -67,48 +95,23 @@ func BinaryStep(a float64) float64 {
 //Tanh takes an input, a , and maps it to the hyperbolic
 //tangent function, producing a probability in the range
 //-1, 1
-func Tanh(a float64) float64 {
+func (t *Tanh) fire(a float64) float64 {
 	return math.Tanh(a)
 }
 
 //ArcTan takes an input a, and returns the arctangent
 //value
-func ArcTan(a float64) float64 {
+func (arc *ArcTan) fire(a float64) float64 {
 	return 1 / (1 + math.Exp(-a)) //doesn't make sense to me either
 }
 
-//LeakyRelu takes an input a, and returns a if a
-//is greater than zero. Otherwise, the function
-//returns 1/1000 the input value
-func LeakyRelu(a float64) float64 {
-	if a < 0 {
-		return .01 * a
-	}
-	return a
-}
-
-//LeakyRelu6 combines leaky relu with a max cap
-//of 6. Eventually I'd like to figure out how to
-//make the cap variable based on either the network's
-//config, or some parameter in the layer
-func LeakyRelu6(a float64) float64 {
-	if a < 0 {
-		return .01 * a
-	} else if a > 6 {
-		return 6
-	} else {
-		return a
-	}
-}
-
 //Swish is weird, but probably really good?
-func Swish(a float64) float64 {
-	//This I guess should eventually involve a constant,
-	//probably at the neuron level. I can make that a
-	//slice of float64 on the layer level, I think
-	return a * Sigmoid(a)
+func (s *Swish) fire(a float64) float64 {
+	//this needs updated, it's an incomplete swish
+	return a * s.Sigmoid.fire(a)
 }
 
+/*
 //Elu
 func Elu(a float64) float64 {
 	return a
@@ -123,3 +126,4 @@ func Gelu(a float64) float64 {
 func Selu(a float64) float64 {
 	return a
 }
+*/

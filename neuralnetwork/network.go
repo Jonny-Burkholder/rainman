@@ -1,6 +1,10 @@
 package neuralnetwork
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/Jonny-Burkholder/neural-network/pkg/matrix"
+)
 
 var nilNetwork = &Network{}
 var nilHiddenLayers = []*layer{}
@@ -48,8 +52,8 @@ func NewNetwork(config *Config, layout ...int) (*Network, error) {
 //it to the network's output to calculate the cost using the
 //config's cost function. It will then send this cost up through
 //each layer using the backpropagation algorithm
-func (n *Network) Backpropagate(expected []float64) {
-	cost, costPrime := meanSquared(*n.OutputLayer.Outputs, expected)
+func (n *Network) Backpropagate(expected *matrix.Matrix) {
+	cost, costPrime := meanSquared(n.OutputLayer.Outputs, expected)
 
 	//as far as I'm aware, there's really no good reason to do
 	//this all in reverse. Heck, we could do em concurrently if

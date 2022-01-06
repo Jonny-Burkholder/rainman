@@ -1,4 +1,4 @@
-package rainman
+package matrix
 
 import (
 	"fmt"

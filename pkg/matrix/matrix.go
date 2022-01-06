@@ -1,4 +1,4 @@
-package rainman
+package matrix
 
 import "fmt"
 
@@ -298,4 +298,8 @@ func (m *Matrix) quickTransform(fn func(r, c int, cell DataType) DataType) {
 			m.Data[mrow+m.Stride*mcol] = nval
 		}
 	}
+}
+
+func (m *Matrix) Length() int {
+	return 0
 }

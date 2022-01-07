@@ -1,14 +1,17 @@
 package neuralnetwork
 
-import "github.com/Jonny-Burkholder/neural-network/pkg/matrix"
+import (
+	"math/rand"
+	"time"
+)
 
 //layer holds an abstract layer of neurons represented
 //by a slice of inputs, and a layer activation function
 type layer struct {
-	Inputs     *matrix.Matrix
-	Weights    *matrix.Matrix
-	Biases     *matrix.Matrix
-	Outputs    *matrix.Matrix
+	Inputs     []float64
+	Weights    [][]float64
+	Biases     []float64
+	Outputs    []float64
 	Activation activation
 }
 
@@ -16,19 +19,41 @@ type layer struct {
 //and outputs, and an activation function, and pseudo-random
 //values for the weights and biases
 func newLayer(inputs, outputs, activation int) *layer {
+
+	rand.Seed(time.Now().UnixNano())
+
+	w := make([][]float64, inputs)
+
+	for i := 0; i < inputs; i++ {
+		w[i] = make([]float64, outputs)
+		for j := 0; j < outputs; j++ {
+			w[i][j] = rand.Float64()
+		}
+	}
+
+	b := make([]float64, outputs)
+
+	for i := 0; i < outputs; i++ {
+		b[i] = rand.Float64()
+	}
+
 	return &layer{
-		Inputs:     matrix.NewMatrix(inputs, 1, nil),
-		Weights:    matrix.NewMatrix(inputs, outputs, nil),
-		Biases:     matrix.NewMatrix(inputs, 1, nil),
-		Outputs:    matrix.NewMatrix(outputs, 1, nil),
+		Inputs:     make([]float64, inputs),
+		Weights:    w,
+		Biases:     b,
+		Outputs:    make([]float64, outputs),
 		Activation: getActivation(activation),
 	}
 }
 
 //fire takes inputs and does the thing
-func (l *layer) fire() { //return the outputs here?
-	res := matrix.Dot(l.Inputs, l.Weights)
-	l.Outputs = matrix.Add(res, l.Biases)
+func (l *layer) fire(input []float64) []float64 {
+	//Yep, this is redundant, I know
+	l.Inputs = input
+	for i, v := range l.Inputs {
+		l.Outputs[i] = dotProduct(v, l.Weights[i])
+	}
+	return l.Outputs
 }
 
 //stepBack takes in a slice representing the cost of the
@@ -36,7 +61,7 @@ func (l *layer) fire() { //return the outputs here?
 //the cost with respect to the layer's activations and biases,
 //respectively, and takes a small step towards the gradient's
 //local minimum
-func (l *layer) stepBack(cost, costPrime *matrix.Matrix) {
+func (l *layer) stepBack(cost, costPrime float64) {
 	//I'm not super worried about getting the calculus right here
 	//just yet, just trying to get the structure back online
 }

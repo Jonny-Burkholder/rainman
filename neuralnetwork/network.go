@@ -2,8 +2,6 @@ package neuralnetwork
 
 import (
 	"errors"
-
-	"github.com/Jonny-Burkholder/neural-network/pkg/matrix"
 )
 
 var nilNetwork = &Network{}
@@ -48,11 +46,21 @@ func NewNetwork(config *Config, layout ...int) (*Network, error) {
 	return &res, nil
 }
 
+//ForwardFeed takes an input slice and feeds it through the network
+//to produce a result in the output layer
+func (n *Network) ForwardFeed(input []float64) []float64 {
+	in := n.InputLayer.fire(input)
+	for i := 0; i < len(n.HiddenLayers); i++ {
+		in = n.HiddenLayers[i].fire(in)
+	}
+	return n.OutputLayer.fire(in)
+}
+
 //Backpropagate will take a slice of expected values and compare
 //it to the network's output to calculate the cost using the
 //config's cost function. It will then send this cost up through
 //each layer using the backpropagation algorithm
-func (n *Network) Backpropagate(expected *matrix.Matrix) {
+func (n *Network) Backpropagate(expected []float64) {
 	cost, costPrime := meanSquared(n.OutputLayer.Outputs, expected)
 
 	//as far as I'm aware, there's really no good reason to do

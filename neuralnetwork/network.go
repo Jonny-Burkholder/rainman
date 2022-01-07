@@ -2,6 +2,7 @@ package neuralnetwork
 
 import (
 	"errors"
+	"fmt"
 )
 
 var nilNetwork = &Network{}
@@ -73,4 +74,22 @@ func (n *Network) Backpropagate(expected []float64) {
 		n.HiddenLayers[i].stepBack(cost, costPrime)
 	}
 	n.InputLayer.stepBack(cost, costPrime)
+}
+
+//String is a stringer
+func (n *Network) String() {
+
+	var s string
+
+	s += fmt.Sprintf("Neural Network:,\n\nInput Layer: %v neurons\nOutput Layer: %vneurons\nHidden Layers: %v\n\n", len(n.InputLayer.Inputs), len(n.OutputLayer.Outputs), len(n.HiddenLayers))
+
+	hn := 0
+
+	for i := 0; i < len(n.HiddenLayers); i++ {
+		s += fmt.Sprintf("Hidden layer %v: %v neurons\n", i, len(n.HiddenLayers[i].Inputs))
+		hn += len(n.HiddenLayers[i].Outputs)
+	}
+
+	fmt.Println(s)
+
 }

@@ -53,6 +53,9 @@ func main() {
 
 	// set up the network...
 	nn := ann.NewANN(&conf)
+	// let's print out the weights in the network
+	fmt.Printf("%s\n", nn)
+
 	// ...and train with our sample set above.
 	// we will do one hundred thousand iterations
 	// with a learn rate of 1.001 and no debug

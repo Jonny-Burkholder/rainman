@@ -162,3 +162,7 @@ func (nn *aNN) feedForward(in []float64) []float64 {
 func (nn *aNN) Predict(in []float64) []float64 {
 	return nn.feedForward(in)
 }
+
+func (nn *aNN) String() string {
+	return sprint3DMatrix(nn.weights)
+}

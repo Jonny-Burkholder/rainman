@@ -38,6 +38,9 @@ func NewNetwork(config *Config, layout ...int) (*Network, error) {
 		res.OutputLayer = newLayer(layout[0], layout[0], config.OutputActivationType)
 	} else {
 		res.InputLayer = newLayer(layout[0], layout[1], config.DefaultActivationType)
+		if len(layout) > 2 {
+			res.HiddenLayers = make([]*layer, len(layout)-2)
+		}
 		for i := 0; i < len(layout)-2; i++ { //for all the layers minus the first and last
 			res.HiddenLayers[i] = newLayer(layout[i+1], layout[i+2], config.DefaultActivationType) //if this isn't clear, we can change the way it's indexed
 		}
@@ -87,9 +90,23 @@ func (n *Network) String() string {
 	hn := 0
 
 	for i := 0; i < len(n.HiddenLayers); i++ {
-		s += fmt.Sprintf("Hidden layer %v: %v neurons\n", i, len(n.HiddenLayers[i].Inputs))
+		s += fmt.Sprintf("Hidden layer %v: %v neurons\n", i+1, len(n.HiddenLayers[i].Inputs))
+		for j := 0; j < len(n.HiddenLayers[i].Weights); j++ {
+			for k := 0; k < len(n.HiddenLayers[i].Weights[j]); k++ {
+				s += fmt.Sprintf("%1.4f, ", n.HiddenLayers[i].Weights[j][k])
+			}
+			s += "\n"
+		}
 		hn += len(n.HiddenLayers[i].Outputs)
 	}
+
+	s += fmt.Sprintf("\nNetwork output:\n")
+
+	for i := 0; i < len(n.OutputLayer.Outputs); i++ {
+		s += fmt.Sprintf("%1.4f, ", n.OutputLayer.Outputs[i])
+	}
+
+	s += "\n\n"
 
 	return s
 

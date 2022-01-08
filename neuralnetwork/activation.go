@@ -8,7 +8,7 @@ import (
 
 var activationTypes = []string{
 	"sigmoid", "relu", "linear", "binary-step", "tanh", "arctan",
-	"leakyrelu", "leakyrelu6", "swish", "elu", "gelu", "selu",
+	"swish", "elu", "gelu", "selu",
 }
 
 type activation interface {
@@ -58,7 +58,7 @@ func getActivation(activation int, leak ...float64) activation {
 	case 0:
 		return &Sigmoid{}
 	case 1:
-		return &Relu{}
+		return relu(leak...)
 	case 2:
 		return &Linear{}
 	case 3:
@@ -72,7 +72,7 @@ func getActivation(activation int, leak ...float64) activation {
 			Sigmoid: &Sigmoid{},
 		}
 	default:
-		return &Relu{}
+		return relu(leak...)
 	}
 }
 

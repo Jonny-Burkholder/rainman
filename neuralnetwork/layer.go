@@ -50,8 +50,10 @@ func newLayer(inputs, outputs, activation int) *layer {
 func (l *layer) fire(input []float64) []float64 {
 	//Yep, this is redundant, I know
 	l.Inputs = input
-	for i, v := range l.Inputs {
-		l.Outputs[i] = dotProduct(v, l.Weights[i])
+	for i, in := range l.Inputs {
+		for j, out := range l.Outputs {
+			out += in * l.Weights[i][j]
+		}
 	}
 	return l.Outputs
 }

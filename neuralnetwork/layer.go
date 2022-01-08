@@ -1,6 +1,7 @@
 package neuralnetwork
 
 import (
+	"fmt"
 	"math/rand"
 	"time"
 )
@@ -50,9 +51,9 @@ func newLayer(inputs, outputs, activation int) *layer {
 func (l *layer) fire(input []float64) []float64 {
 	//Yep, this is redundant, I know
 	l.Inputs = input
-	for i, in := range l.Inputs {
-		for j, out := range l.Outputs {
-			out += in * l.Weights[i][j]
+	for i := 0; i < len(l.Inputs); i++ {
+		for j := 0; j < len(l.Outputs); j++ {
+			l.Outputs[j] += l.Inputs[i] * l.Weights[i][j]
 		}
 	}
 	return l.Outputs
@@ -64,6 +65,7 @@ func (l *layer) fire(input []float64) []float64 {
 //respectively, and takes a small step towards the gradient's
 //local minimum
 func (l *layer) stepBack(costPrime, rate float64) {
+	fmt.Println(costPrime)
 	l.updateWeights(costPrime, rate)
 	l.updateBias(costPrime, rate)
 }
@@ -73,7 +75,11 @@ func (l *layer) updateWeights(costPrime, rate float64) {
 	//for each weight
 	for i := 0; i < len(l.Weights); i++ {
 		for j := 0; j < len(l.Weights[i]); j++ {
-			l.Weights[i][j] -= (rate * costPrime * l.Inputs[i] * l.Activation.derivative(l.Outputs[j]))
+			nudge := (rate * costPrime * l.Inputs[i] * l.Activation.derivative(l.Outputs[j]))
+			fmt.Printf("Nudge: %f\n", nudge)
+			fmt.Println(l.Weights[i][j])
+			l.Weights[i][j] -= nudge
+			fmt.Println(l.Weights[i][j])
 		}
 	}
 }

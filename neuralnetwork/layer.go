@@ -61,7 +61,24 @@ func (l *layer) fire(input []float64) []float64 {
 //the cost with respect to the layer's activations and biases,
 //respectively, and takes a small step towards the gradient's
 //local minimum
-func (l *layer) stepBack(cost, costPrime float64) {
-	//I'm not super worried about getting the calculus right here
-	//just yet, just trying to get the structure back online
+func (l *layer) stepBack(costPrime, rate float64) {
+	l.updateWeights(costPrime, rate)
+	l.updateBias(costPrime, rate)
+}
+
+//updateWeights - yep
+func (l *layer) updateWeights(costPrime, rate float64) {
+	//for each weight
+	for i := 0; i < len(l.Weights); i++ {
+		for j := 0; j < len(l.Weights[i]); j++ {
+			l.Weights[i][j] -= (rate * costPrime * l.Inputs[i] * l.Activation.derivative(l.Outputs[j]))
+		}
+	}
+}
+
+//updateBias
+func (l *layer) updateBias(costPrime, rate float64) {
+	for i, bias := range l.Biases {
+		bias -= (rate * costPrime * l.Activation.derivative(l.Outputs[i]))
+	}
 }

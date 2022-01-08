@@ -13,6 +13,7 @@ var activationTypes = []string{
 
 type activation interface {
 	fire(float64) float64
+	derivative(float64) float64
 }
 
 type Sigmoid struct{}

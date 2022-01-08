@@ -16,7 +16,7 @@ func TestMatrixSize(t *testing.T) {
 
 	dat = dataSetB
 	m = NewMatrix(dat.Rows, dat.Cols, dat.Data)
-	fmt.Printf("[set B] matrix.size=%d (bytes)\n", m.Size())
+	fmt.Printf("[set Biases] matrix.size=%d (bytes)\n", m.Size())
 
 	m.Reset()
 	fmt.Printf("[reset] matrix.size=%d (bytes)\n", m.Size())

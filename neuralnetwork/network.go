@@ -78,7 +78,7 @@ func (n *Network) Backpropagate(expected []float64) {
 }
 
 //String is a stringer
-func (n *Network) String() {
+func (n *Network) String() string {
 
 	var s string
 
@@ -91,6 +91,6 @@ func (n *Network) String() {
 		hn += len(n.HiddenLayers[i].Outputs)
 	}
 
-	fmt.Println(s)
+	return s
 
 }

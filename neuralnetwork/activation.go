@@ -28,6 +28,19 @@ type Relu struct {
 	CapAmnt  float64
 }
 
+func relu(leak ...float64) *Relu {
+	r := Relu{}
+	if len(leak) > 0 {
+		r.Leak = true
+		r.LeakAmnt = leak[0]
+		if len(leak) > 1 && leak[1] > 1 {
+			r.Cap = true
+			r.CapAmnt = leak[1]
+		}
+	}
+	return &r
+}
+
 type Linear struct{}
 
 type BinaryStep struct{}
@@ -40,7 +53,7 @@ type Swish struct {
 	Sigmoid *Sigmoid
 }
 
-func getActivation(activation int) activation {
+func getActivation(activation int, leak ...float64) activation {
 	switch activation {
 	case 0:
 		return &Sigmoid{}

@@ -1,4 +1,4 @@
-package nnv2
+package ann
 
 import (
 	"bytes"

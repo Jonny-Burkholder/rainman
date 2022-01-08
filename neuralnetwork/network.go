@@ -19,6 +19,7 @@ type Network struct {
 	InputLayer   *layer
 	HiddenLayers []*layer
 	OutputLayer  *layer
+	//CostFunction *CostFunction //just like we're doing with activation functions in layers
 }
 
 //NewNetwork takes a config struct and a variadic number of inputs

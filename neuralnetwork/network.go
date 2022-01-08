@@ -91,6 +91,7 @@ func (n *Network) String() string {
 
 	for i := 0; i < len(n.HiddenLayers); i++ {
 		s += fmt.Sprintf("Hidden layer %v: %v neurons\n", i+1, len(n.HiddenLayers[i].Inputs))
+		s += fmt.Sprintf("Weights:\n")
 		for j := 0; j < len(n.HiddenLayers[i].Weights); j++ {
 			for k := 0; k < len(n.HiddenLayers[i].Weights[j]); k++ {
 				s += fmt.Sprintf("%1.4f, ", n.HiddenLayers[i].Weights[j][k])
@@ -98,6 +99,10 @@ func (n *Network) String() string {
 			s += "\n"
 		}
 		hn += len(n.HiddenLayers[i].Outputs)
+		s += fmt.Sprintf("Biases:\n")
+		for j := 0; j < len(n.HiddenLayers[i].Biases); j++ {
+			s += fmt.Sprintf("%1.4f, ", n.HiddenLayers[i].Biases[j])
+		}
 	}
 
 	s += fmt.Sprintf("\nNetwork output:\n")

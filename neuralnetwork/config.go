@@ -2,6 +2,8 @@ package neuralnetwork
 
 var costFunctions = []string{"Mean Squared", "Cross-Entropy"} //for human reference
 
+//eventually we'll have different gradient descent options like momentum and adam
+
 type Config struct {
 	DefaultActivationType int //we'll have a slice of activation types somewhere. I mean really the only point of having them though is for human benefit, a simple int works just fine
 	OutputActivationType  int //default for this will be sigmoid

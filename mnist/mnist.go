@@ -1,0 +1,3 @@
+package mnist
+
+func main() {}

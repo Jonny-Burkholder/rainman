@@ -19,7 +19,7 @@ type Network struct {
 	InputLayer   *layer
 	HiddenLayers []*layer
 	OutputLayer  *layer
-	//CostFunction *CostFunction //just like we're doing with activation functions in layers
+	CostFunction costfunction //just like we're doing with activation functions in layers
 }
 
 //NewNetwork takes a config struct and a variadic number of inputs
@@ -30,6 +30,8 @@ func NewNetwork(config *Config, layout ...int) (*Network, error) {
 	res := Network{
 		Config: config,
 	}
+
+	res.CostFunction = getCost(config.CostFunction)
 
 	if len(layout) < 1 {
 		return nilNetwork, errNoLayout
@@ -65,9 +67,7 @@ func (n *Network) ForwardFeed(input []float64) []float64 {
 //it to the network's output to calculate the cost using the
 //config's cost function. It will then send this cost up through
 //each layer using the backpropagation algorithm
-func (n *Network) Backpropagate(expected []float64) {
-	costPrime := meanSquared(n.OutputLayer.Outputs, expected)
-
+func (n *Network) Backpropagate(costPrime float64) {
 	//as far as I'm aware, there's really no good reason to do
 	//this all in reverse. Heck, we could do em concurrently if
 	//my understanding of the thing. But hey, I'll stick with

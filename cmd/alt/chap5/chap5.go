@@ -16,7 +16,7 @@ var x = [][]float64{
 var inputs = []float64{0.0, 2.0, -1.0, 3.3, -2.7, 1.1, 2.2, -100}
 var output = []float64{}
 
-func relu(input, output []float64) {
+func ReLU(input, output []float64) {
 	for i := range input {
 		output = append(output, math.Max(0, input[i]))
 	}

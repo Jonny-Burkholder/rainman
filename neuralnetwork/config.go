@@ -8,6 +8,7 @@ type Config struct {
 	DefaultActivationType int //we'll have a slice of activation types somewhere. I mean really the only point of having them though is for human benefit, a simple int works just fine
 	OutputActivationType  int //default for this will be sigmoid
 	CostFunction          int
+	DescentType           int //algorithm used for gradient descent
 	MaxSteps              int //Depending on the size of a given epoch, terminate after so many steps if the epoch has not been exhausted
 	StochasticMax         int //maximum number of training values passed in a stochastic gradiant descent
 	ReluCap               int //the capped output of the relu function, e.g. relu6
@@ -16,11 +17,12 @@ type Config struct {
 	ReluLeak              float64
 }
 
-func NewConfig(a, o, c, m, s, rc int, l, b, r float64) *Config {
+func NewConfig(a, o, c, d, m, s, rc int, l, b, r float64) *Config {
 	return &Config{
 		DefaultActivationType: a,
 		OutputActivationType:  o,
 		CostFunction:          c,
+		DescentType:           d,
 		MaxSteps:              m,
 		StochasticMax:         s,
 		ReluCap:               rc,
@@ -35,6 +37,7 @@ func NewDefaultConfig() *Config {
 		DefaultActivationType: 0,
 		OutputActivationType:  0,
 		CostFunction:          0,
+		DescentType:           1,
 		MaxSteps:              1000, //no idea if that's a good size
 		StochasticMax:         30,
 		ReluCap:               6,  //pretty standard stuff

@@ -138,7 +138,7 @@ func ReadDataSet(imagesPath, labelsPath string) (*DataSet, error) {
 		return nil, err
 	}
 	if images.N != labels.N {
-		return nil, fmt.Errorf(msgSizeUnmatch, labelsPath, imagesPath)
+		return nil, fmt.Errorf("%v, %v, %v, ", msgSizeUnmatch, labelsPath, imagesPath)
 	}
 	dataSet := &DataSet{
 		N:      images.N,

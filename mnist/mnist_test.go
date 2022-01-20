@@ -28,8 +28,11 @@ func TestMnist(t *testing.T) {
 	fmt.Println(data.Width)  // image width [pixel]
 	fmt.Println(data.Height) // image height [pixel]
 
-	for i := 0; i < 5; i++ {
-		printData(data, i)
+	for i := 0; i < 2; i++ {
+		fmt.Println(data.Data[i].Digit)
+		fmt.Println(data.Data[i].Image)
+		fmt.Println()
+		fmt.Println()
 	}
 
 }

@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	TrainImagesFile = "train-images-ix3-ubyte"
+	TrainImagesFile = "train-images-idx3-ubyte"
 	TrainLabelsFile = "train-labels-idx1-ubyte"
 	TestImagesFile  = "t10k-images-idx3-ubyte"
 	TestLabelsFile  = "t10k-labels-idx1-ubyte"
@@ -157,6 +157,12 @@ func ReadDataSet(imagesPath, labelsPath string) (*DataSet, error) {
 }
 
 func ReadTrainSet(dir string) (*DataSet, error) {
+	imagesPath := filepath.Join(dir, TrainImagesFile)
+	labelsPath := filepath.Join(dir, TrainLabelsFile)
+	return ReadDataSet(imagesPath, labelsPath)
+}
+
+func ReadTestSet(dir string) (*DataSet, error) {
 	imagesPath := filepath.Join(dir, TestImagesFile)
 	labelsPath := filepath.Join(dir, TestLabelsFile)
 	return ReadDataSet(imagesPath, labelsPath)

@@ -1,7 +1,6 @@
 package neuralnetwork
 
 import (
-	"fmt"
 	"math/rand"
 	"time"
 )
@@ -65,7 +64,6 @@ func (l *layer) fire(input []float64) []float64 {
 //respectively, and takes a small step towards the gradient's
 //local minimum
 func (l *layer) stepBack(costPrime, rate float64) {
-	fmt.Println(costPrime)
 	l.updateWeights(costPrime, rate)
 	l.updateBias(costPrime, rate)
 }
@@ -76,10 +74,7 @@ func (l *layer) updateWeights(costPrime, rate float64) {
 	for i := 0; i < len(l.Weights); i++ {
 		for j := 0; j < len(l.Weights[i]); j++ {
 			nudge := (rate * costPrime * l.Inputs[i] * l.Activation.derivative(l.Outputs[j]))
-			fmt.Printf("Nudge: %f\n", nudge)
-			fmt.Println(l.Weights[i][j])
 			l.Weights[i][j] -= nudge
-			fmt.Println(l.Weights[i][j])
 		}
 	}
 }

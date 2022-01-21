@@ -1,6 +1,7 @@
 package neuralnetwork
 
 import (
+	"fmt"
 	"math/rand"
 	"time"
 
@@ -69,11 +70,51 @@ func unpackExample(e [][]uint8) []float64 {
 	return res
 }
 
+//decide is a helper function that picks the highest output of the network
+func decide(res []float64) (int, float64) {
+	h := 0
+	var c float64
+	for i, num := range res {
+		if num > c {
+			h = i
+			c = num
+		}
+	}
+	return h, c
+}
+
 //TestMnist will test a fully-trained network to see how much of the test
 //data it can correctly recognize
-func TestMnist() {
+func (n *Network) TestMnist() {
+	var res string
+	var correct, incorrect int
+	var avgCertainty float64
 	//do stuff and print stuff here
+	start := time.Now()
+	data, err := mnist.ReadTestSet("./mnist/dataset")
+	if err != nil {
+		panic(err)
+	}
+	for i := 0; i < data.N; i++ {
+		input := unpackExample(data.Data[i].Image)
+		num, certainty := decide(n.ForwardFeed(input))
+		if num != data.Data[i].Digit {
+			incorrect++
+		} else {
+			correct++
+		}
+		avgCertainty += certainty
+	}
 	//good news is, there's no need to randomize anything
 	//don't even need to return, we'll just track everything
 	//and print from here
+	duration := time.Now().Sub(start)
+
+	res += fmt.Sprintf("Tested %v examples in %v seconds\n\n", data.N, duration.Seconds())
+	res += fmt.Sprintf("Tested Correct: %v\n", correct)
+	res += fmt.Sprintf("Tested Incorrect: %v\n", incorrect)
+	res += fmt.Sprintf("Percent Correct: %2f\n", float64(correct)/float64(data.N))
+	res += fmt.Sprintf("Average Certainty: %v\n", avgCertainty)
+
+	fmt.Print(res)
 }

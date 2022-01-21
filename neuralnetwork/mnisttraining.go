@@ -56,14 +56,24 @@ func (n *Network) TrainMnist() {
 }
 
 //this is going to be expensive. Whoops
+//Adding sigmoid to each input to further PUNISH my cpu.
+//and also because all of my weights are getting turned
+//to NaN, which I don't like, and might be becuase of the
+//massive values I'm putting into the system. I think I'm
+//getting overflow somewhere. Poor rainman's brain is exploding!
+//too much input.
+//Ok turns out that wasn't the problem, and I might have something
+//where I'm trying to calculate an imaginary number somewhere
 func unpackExample(e [][]uint8) []float64 {
 	res := make([]float64, len(e)*len(e[0]))
+
+	sig := Sigmoid{}
 
 	k := 0
 
 	for i := 0; i < len(e); i++ {
 		for j := 0; j < len(e[0]); j++ {
-			res[k] = float64(e[i][j]) //I should really bitshift this
+			res[k] = sig.fire(float64(e[i][j])) //there's probably a way bitshift this, instead of... this
 			k++
 		}
 	}
@@ -113,7 +123,7 @@ func (n *Network) TestMnist() {
 	res += fmt.Sprintf("Tested %v examples in %v seconds\n\n", data.N, duration.Seconds())
 	res += fmt.Sprintf("Tested Correct: %v\n", correct)
 	res += fmt.Sprintf("Tested Incorrect: %v\n", incorrect)
-	res += fmt.Sprintf("Percent Correct: %2f\n", float64(correct)/float64(data.N))
+	res += fmt.Sprintf("Percent Correct: %2.2f\n", float64(correct)/float64(data.N)*100)
 	res += fmt.Sprintf("Average Certainty: %v\n", avgCertainty)
 
 	fmt.Print(res)

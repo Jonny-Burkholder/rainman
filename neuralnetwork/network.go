@@ -105,6 +105,12 @@ func (n *Network) String() string {
 		}
 	}
 
+	s += fmt.Sprintf("\nNetwork input [%v inputs]:\n", len(n.InputLayer.Inputs))
+
+	for i := 0; i < len(n.InputLayer.Inputs); i++ {
+		s += fmt.Sprintf("%1.4f, ", n.InputLayer.Inputs[i])
+	}
+
 	s += fmt.Sprintf("\nNetwork output:\n")
 
 	for i := 0; i < len(n.OutputLayer.Outputs); i++ {

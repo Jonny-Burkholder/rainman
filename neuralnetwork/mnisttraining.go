@@ -73,12 +73,14 @@ func unpackExample(e [][]uint8) []float64 {
 
 	for i := 0; i < len(e); i++ {
 		for j := 0; j < len(e[0]); j++ {
+			//back to the old sigmoid ploy, eh?
+			sig := Sigmoid{}
 			//have to cap values at 100 for the sigmoid to work, because of how golang's
 			//math.Exp() function works. Honestly... I'm not even sure why the mnist values
 			//go so high. I'm sure I could figure out a useful way to squishify them between
 			//0 and 100, but... what's the point lol
 			if e[i][j] < 100 {
-				res[k] = float64(e[i][j]) //there's probably a way bitshift this, instead of... this
+				res[k] = sig.fire(float64(e[i][j])) //there's probably a way bitshift this, instead of... this
 			} else {
 				res[k] = 100
 			}

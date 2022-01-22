@@ -2,6 +2,19 @@ package neuralnetwork
 
 var costFunctions = []string{"Mean Squared", "Cross-Entropy"} //for human reference
 
+var DefaultConfig = &Config{
+	DefaultActivationType: 1,
+	OutputActivationType:  0,
+	CostFunction:          0,
+	DescentType:           1,
+	MaxSteps:              1000, //no idea if that's a good size
+	StochasticMax:         30,
+	ReluCap:               6,  //pretty standard stuff
+	LearningRate:          .1, //This will scale down with each iteration
+	TrainingCondition:     .01,
+	ReluLeak:              .01,
+}
+
 //eventually we'll have different gradient descent options like momentum and adam
 
 type Config struct {
@@ -29,20 +42,5 @@ func NewConfig(a, o, c, d, m, s, rc int, l, b, r float64) *Config {
 		LearningRate:          l,
 		TrainingCondition:     b,
 		ReluLeak:              r,
-	}
-}
-
-func NewDefaultConfig() *Config {
-	return &Config{
-		DefaultActivationType: 0,
-		OutputActivationType:  0,
-		CostFunction:          0,
-		DescentType:           1,
-		MaxSteps:              1000, //no idea if that's a good size
-		StochasticMax:         30,
-		ReluCap:               6,  //pretty standard stuff
-		LearningRate:          .1, //This will scale down with each iteration
-		TrainingCondition:     .01,
-		ReluLeak:              .01,
 	}
 }

@@ -18,7 +18,7 @@ type layer struct {
 //newLayer returns a new layer with a given number of inputs
 //and outputs, and an activation function, and pseudo-random
 //values for the weights and biases
-func newLayer(inputs, outputs, activation int) *layer {
+func (n *Network) newLayer(inputs, outputs, activationType int) *layer {
 
 	rand.Seed(time.Now().UnixNano())
 
@@ -37,12 +37,20 @@ func newLayer(inputs, outputs, activation int) *layer {
 		b[i] = rand.Float64()
 	}
 
+	var a activation
+
+	if activationType != 1 {
+		a = getActivation(activationType)
+	} else {
+		a = getActivation(activationType, n.Config.ReluLeak)
+	}
+
 	return &layer{
 		Inputs:     make([]float64, inputs),
 		Weights:    w,
 		Biases:     b,
 		Outputs:    make([]float64, outputs),
-		Activation: getActivation(activation),
+		Activation: a,
 	}
 }
 

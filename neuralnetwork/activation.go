@@ -79,7 +79,7 @@ func getActivation(activation int, leak ...float64) activation {
 //Sigmoid takes an input a and applies the logistic sigmoid
 //function, returning an activation between 0 and 1
 func (s *Sigmoid) fire(a float64) float64 {
-	return math.Exp(a) / (math.Exp(a) + 1)
+	return (1 / (math.Exp(-a) + 1))
 }
 
 //Relu is a nonlinear activation function that takes an input

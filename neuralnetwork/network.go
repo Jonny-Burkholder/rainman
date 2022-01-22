@@ -36,19 +36,19 @@ func NewNetwork(config *Config, layout ...int) (*Network, error) {
 	if len(layout) < 1 {
 		return nilNetwork, errNoLayout
 	} else if len(layout) < 2 {
-		res.InputLayer = newLayer(layout[0], layout[0], config.DefaultActivationType)
-		res.OutputLayer = newLayer(layout[0], layout[0], config.OutputActivationType)
+		res.InputLayer = res.newLayer(layout[0], layout[0], config.DefaultActivationType)
+		res.OutputLayer = res.newLayer(layout[0], layout[0], config.OutputActivationType)
 	} else {
-		res.InputLayer = newLayer(layout[0], layout[1], config.DefaultActivationType)
+		res.InputLayer = res.newLayer(layout[0], layout[1], config.DefaultActivationType)
 		if len(layout) > 2 {
 			res.HiddenLayers = make([]*layer, len(layout)-2)
 		}
 		for i := 0; i < len(layout)-2; i++ { //for all the layers minus the first and last
-			res.HiddenLayers[i] = newLayer(layout[i+1], layout[i+2], config.DefaultActivationType) //if this isn't clear, we can change the way it's indexed
+			res.HiddenLayers[i] = res.newLayer(layout[i+1], layout[i+2], config.DefaultActivationType) //if this isn't clear, we can change the way it's indexed
 		}
 		//Outputlayer in this case is mostly just a transformation layer, so it will always have
 		//the same number of inputs and outputs
-		res.OutputLayer = newLayer(layout[len(layout)-1], layout[len(layout)-1], config.OutputActivationType)
+		res.OutputLayer = res.newLayer(layout[len(layout)-1], layout[len(layout)-1], config.OutputActivationType)
 	}
 	return &res, nil
 }

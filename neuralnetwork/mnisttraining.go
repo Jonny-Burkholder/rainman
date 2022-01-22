@@ -43,7 +43,7 @@ func (n *Network) TrainMnist() {
 			out := n.ForwardFeed(input)
 			expected := make([]float64, len(out))
 			expected[data.Data[j].Digit] = 1.0
-			cost, prime := n.CostFunction.cost(out, expected)
+			cost, prime := n.CostFunction.Cost(out, expected)
 			n.Backpropagate(prime)
 			avgErr += cost
 		}
@@ -67,13 +67,21 @@ func (n *Network) TrainMnist() {
 func unpackExample(e [][]uint8) []float64 {
 	res := make([]float64, len(e)*len(e[0]))
 
-	sig := Sigmoid{}
+	//sig := Sigmoid{}
 
 	k := 0
 
 	for i := 0; i < len(e); i++ {
 		for j := 0; j < len(e[0]); j++ {
-			res[k] = sig.fire(float64(e[i][j])) //there's probably a way bitshift this, instead of... this
+			//have to cap values at 100 for the sigmoid to work, because of how golang's
+			//math.Exp() function works. Honestly... I'm not even sure why the mnist values
+			//go so high. I'm sure I could figure out a useful way to squishify them between
+			//0 and 100, but... what's the point lol
+			if e[i][j] < 100 {
+				res[k] = float64(e[i][j]) //there's probably a way bitshift this, instead of... this
+			} else {
+				res[k] = 100
+			}
 			k++
 		}
 	}

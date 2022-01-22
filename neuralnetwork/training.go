@@ -54,7 +54,7 @@ func (n *Network) Train(t *TrainingData) {
 		for k*chunksize <= len(epoch) && k <= n.Config.MaxSteps && currentErr > n.Config.TrainingCondition {
 			for m := k * chunksize; m < iter*chunksize; m++ {
 				res := n.ForwardFeed(example.Data[epoch[m]].Inputs)
-				cost, prime := n.CostFunction.cost(res, example.Data[epoch[m]].Expected)
+				cost, prime := n.CostFunction.Cost(res, example.Data[epoch[m]].Expected)
 				currentErr = cost
 				averageCost += cost
 				costPrime += prime

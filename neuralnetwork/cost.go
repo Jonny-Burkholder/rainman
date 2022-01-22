@@ -1,7 +1,7 @@
 package neuralnetwork
 
 type costfunction interface {
-	cost([]float64, []float64) (float64, float64)
+	Cost([]float64, []float64) (float64, float64)
 }
 
 func getCost(i int) costfunction {
@@ -21,7 +21,7 @@ func getCost(i int) costfunction {
 type meanSquared struct{}
 
 //cost is the cost function of meanSquared
-func (m meanSquared) cost(actual, expected []float64) (float64, float64) {
+func (m meanSquared) Cost(actual, expected []float64) (float64, float64) {
 	//crash if len(actual) != len(expected)? Who knows
 
 	var length int
@@ -48,6 +48,6 @@ func (m meanSquared) cost(actual, expected []float64) (float64, float64) {
 type crossEntropy struct{}
 
 //cost is the cost function for crossEntropy
-func (c *crossEntropy) cost(actual, expected []float64) (float64, float64) {
+func (c *crossEntropy) Cost(actual, expected []float64) (float64, float64) {
 	return 0, 0
 }

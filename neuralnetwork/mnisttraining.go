@@ -31,6 +31,10 @@ func (n *Network) TrainMnist() {
 
 	//run until either we run out of data, or the config file tells us to stop
 	for i*chunkSize < data.N && i < n.Config.MaxSteps && avgErr > n.Config.TrainingCondition {
+		//just to make sure we aren't hanging anywhere
+		if i%100 == 0 {
+			fmt.Printf("Training %v examples...\n", i)
+		}
 		//let's grab the index numbers for this chunk
 		startIndex := chunkSize * i
 		endIndex := startIndex + chunkSize
@@ -50,6 +54,8 @@ func (n *Network) TrainMnist() {
 
 		//it is *average* error, after all
 		avgErr /= float64(chunkSize)
+
+		i++
 
 	}
 
@@ -73,14 +79,12 @@ func unpackExample(e [][]uint8) []float64 {
 
 	for i := 0; i < len(e); i++ {
 		for j := 0; j < len(e[0]); j++ {
-			//back to the old sigmoid ploy, eh?
-			sig := Sigmoid{}
 			//have to cap values at 100 for the sigmoid to work, because of how golang's
 			//math.Exp() function works. Honestly... I'm not even sure why the mnist values
 			//go so high. I'm sure I could figure out a useful way to squishify them between
 			//0 and 100, but... what's the point lol
 			if e[i][j] < 100 {
-				res[k] = sig.fire(float64(e[i][j])) //there's probably a way bitshift this, instead of... this
+				res[k] = float64(e[i][j]) / 100 //there's probably a way bitshift this, instead of... this
 			} else {
 				res[k] = 100
 			}
@@ -116,6 +120,9 @@ func (n *Network) TestMnist() {
 		panic(err)
 	}
 	for i := 0; i < data.N; i++ {
+		if i%1000 == 0 {
+			fmt.Printf("Testing %v examples...", i)
+		}
 		input := unpackExample(data.Data[i].Image)
 		num, certainty := decide(n.ForwardFeed(input))
 		if num != data.Data[i].Digit {
@@ -125,6 +132,9 @@ func (n *Network) TestMnist() {
 		}
 		avgCertainty += certainty
 	}
+
+	avgCertainty /= float64(data.N)
+
 	//good news is, there's no need to randomize anything
 	//don't even need to return, we'll just track everything
 	//and print from here
@@ -134,7 +144,7 @@ func (n *Network) TestMnist() {
 	res += fmt.Sprintf("Tested Correct: %v\n", correct)
 	res += fmt.Sprintf("Tested Incorrect: %v\n", incorrect)
 	res += fmt.Sprintf("Percent Correct: %2.2f\n", float64(correct)/float64(data.N)*100)
-	res += fmt.Sprintf("Average Certainty: %v\n", avgCertainty)
+	res += fmt.Sprintf("Average Certainty: %1.2f\n", avgCertainty)
 
 	fmt.Print(res)
 }

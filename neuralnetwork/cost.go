@@ -39,8 +39,9 @@ func (m meanSquared) Cost(actual, expected []float64) (float64, float64) {
 		//I feel pretty confident this is the wrong algorithm for costPrime...
 		//isn't is supposed to always be positive?
 		cost += a * a
-		costPrime += a * 2
+		costPrime += a * -1
 	}
+
 	return cost, costPrime
 }
 

@@ -87,7 +87,15 @@ func (s *Sigmoid) fire(a float64) float64 {
 //the function returns 0
 func (r *Relu) fire(a float64) float64 {
 	if a < 0 {
+		if r.Leak {
+			return r.LeakAmnt
+		}
 		return 0
+	}
+	if r.Cap {
+		if a > r.CapAmnt {
+			return r.CapAmnt
+		}
 	}
 	return a
 }

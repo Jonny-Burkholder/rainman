@@ -1,6 +1,10 @@
 package main
 
 import (
+	"fmt"
+	"math/rand"
+	"time"
+
 	"github.com/Jonny-Burkholder/neural-network/neuralnetwork"
 )
 
@@ -11,7 +15,7 @@ func main() {
 		panic(err)
 	}
 	//fmt.Println("Before training:")
-	//fmt.Println(n.String())
+	fmt.Println(n.String())
 
 	/*
 		rand.Seed(time.Now().UnixNano())
@@ -36,10 +40,25 @@ func main() {
 		}
 	*/
 
-	n.TrainMnist()
+	//n.TrainMnist()
 	//fmt.Println("After training:")
 	//fmt.Println(n.String())
-	n.TestMnist()
+	//n.TestMnist()
+	nums := make([]float64, 28*28)
+	rand.Seed(time.Now().UnixNano())
+	for i := 0; i < 10; i++ {
+		out := ""
+		for j := 0; j < 28*28; j++ {
+			nums[j] = rand.Float64()
+		}
+		res := n.ForwardFeed(nums)
+		for _, num := range res {
+			out += fmt.Sprintf("%v ", num)
+		}
+		fmt.Println("Output:")
+		fmt.Println(out)
+	}
+	fmt.Println(n.String())
 }
 
 func averageCost(val []float64) float64 {

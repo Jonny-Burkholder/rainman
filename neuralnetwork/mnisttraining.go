@@ -32,7 +32,7 @@ func (n *Network) TrainMnist() {
 
 	//run until either we run out of data, or the config file tells us to stop
 	//honestly not really sure why I'm even using chunk sizes here
-	for i*chunkSize < data.N && i < 1000 && avgErr > n.Config.TrainingCondition {
+	for i*chunkSize < data.N && i < 1 && avgErr > n.Config.TrainingCondition {
 		//reset average error
 		avgErr = 0
 
@@ -101,7 +101,7 @@ func unpackExample(e [][]uint8) []float64 {
 			//math.Exp() function works. Honestly... I'm not even sure why the mnist values
 			//go so high. I'm sure I could figure out a useful way to squishify them between
 			//0 and 100, but... what's the point lol
-			res[k] = float64(e[i][j])
+			res[k] = float64(e[i][j]) / 100
 			k++
 		}
 	}
@@ -138,6 +138,8 @@ func (n *Network) TestMnist() {
 		fmt.Printf("Testing %v examples...\n", i)
 		//}
 		input := unpackExample(data.Data[i].Image)
+		//fmt.Println("Input:")
+		//fmt.Println(input)
 		res := n.ForwardFeed(input)
 		num, certainty := decide(res)
 		if num != data.Data[i].Digit {
@@ -147,10 +149,10 @@ func (n *Network) TestMnist() {
 		}
 		avgCertainty += certainty
 
-		fmt.Printf("Predicted: %v\n", num)
-		fmt.Println(res)
-		fmt.Printf("Expected: %v\n", data.Data[i].Digit)
-		mnist.PrintImage(data.Data[i].Image)
+		//fmt.Printf("Predicted: %v\n", num)
+		//fmt.Println(res)
+		//fmt.Printf("Expected: %v\n", data.Data[i].Digit)
+		//mnist.PrintImage(data.Data[i].Image)
 	}
 
 	avgCertainty /= float64(data.N)

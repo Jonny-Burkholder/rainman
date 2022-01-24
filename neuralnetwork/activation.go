@@ -88,8 +88,8 @@ func (s *Sigmoid) fire(a float64) float64 {
 //a, and returns a if the input is greater than zero. Otherwise
 //the function returns 0
 func (r *Relu) fire(a float64) float64 {
-	if a <= 0 {
-		return r.LeakAmnt
+	if a < 0 {
+		return a * r.LeakAmnt
 	} else if r.Cap {
 		if a > r.CapAmnt {
 			return r.CapAmnt

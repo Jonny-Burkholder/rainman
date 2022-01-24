@@ -42,9 +42,9 @@ func (n *Network) newLayer(inputs, outputs, activationType int) *layer {
 	var a activation
 
 	if activationType != 1 {
-		a = getActivation(activationType, n.Config.ReluLeak, n.Config.ReluCap)
-	} else {
 		a = getActivation(activationType, n.Config.ReluLeak)
+	} else {
+		a = getActivation(activationType, n.Config.ReluLeak, n.Config.ReluCap)
 	}
 
 	return &layer{
@@ -66,10 +66,10 @@ func (l *layer) fire(input []float64) []float64 {
 		}
 	}
 
-	//I forget the formula, but I think this is right. Send the sum of inputs*weights
+	//I forget the formula, but I think this is right. Send the sum of inputs weights
 	//through the activation function, *then* add the bias
 	for i := range l.Outputs {
-		l.Outputs[i] = (l.Activation.fire(l.Outputs[i]) + l.Biases[i])
+		l.Outputs[i] = l.Activation.fire(l.Outputs[i]/float64(len(l.Weights[i]))) + l.Biases[i]
 	}
 
 	return l.Outputs

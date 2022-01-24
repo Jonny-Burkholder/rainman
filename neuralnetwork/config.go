@@ -3,7 +3,7 @@ package neuralnetwork
 var costFunctions = []string{"Mean Squared", "Cross-Entropy"} //for human reference
 
 var DefaultConfig = &Config{
-	DefaultActivationType: 0,
+	DefaultActivationType: 1,
 	OutputActivationType:  0,
 	CostFunction:          0,
 	DescentType:           1,

@@ -82,23 +82,16 @@ func (n *Network) String() string {
 
 	s += fmt.Sprintf("Neural Network:,\n\nInput Layer: %v neurons\nOutput Layer: %v neurons\nHidden Layers: %v\n\n", len(n.InputLayer.Inputs), len(n.OutputLayer.Outputs), len(n.HiddenLayers))
 
-	hn := 0
+	s += "\nInput Layer\n"
+	s += n.InputLayer.String(false)
 
 	for i := 0; i < len(n.HiddenLayers); i++ {
-		s += fmt.Sprintf("Hidden layer %v: %v neurons\n", i+1, len(n.HiddenLayers[i].Inputs))
-		s += fmt.Sprintf("Weights:\n")
-		for j := 0; j < len(n.HiddenLayers[i].Weights); j++ {
-			for k := 0; k < len(n.HiddenLayers[i].Weights[j]); k++ {
-				s += fmt.Sprintf("%1.4f, ", n.HiddenLayers[i].Weights[j][k])
-			}
-			s += "\n"
-		}
-		hn += len(n.HiddenLayers[i].Outputs)
-		s += fmt.Sprintf("Biases:\n")
-		for j := 0; j < len(n.HiddenLayers[i].Biases); j++ {
-			s += fmt.Sprintf("%1.4f, ", n.HiddenLayers[i].Biases[j])
-		}
+		s += fmt.Sprintf("\nLayer %v:\n", i)
+		s += n.HiddenLayers[i].String()
 	}
+
+	s += "\nOutput Layer\n"
+	s += n.OutputLayer.String()
 
 	s += fmt.Sprintf("\nNetwork input [%v inputs]:\n", len(n.InputLayer.Inputs))
 

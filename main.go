@@ -2,46 +2,46 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
-	"time"
 
 	"github.com/Jonny-Burkholder/neural-network/neuralnetwork"
 )
 
 func main() {
-	//n, err := neuralnetwork.NewNetwork(neuralnetwork.DefaultConfig, 28*28, 28, 10)
-	n, err := neuralnetwork.NewNetwork(neuralnetwork.DefaultConfig, 10, 8, 4)
+	n, err := neuralnetwork.NewNetwork(neuralnetwork.DefaultConfig, 28*28, 28, 10)
+	//n, err := neuralnetwork.NewNetwork(neuralnetwork.DefaultConfig, 10, 8, 4)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("Before training:")
 	fmt.Println(n.String())
 
-	rand.Seed(time.Now().UnixNano())
-	data := make([]float64, 10)
-	for j := 0; j < 10; j++ {
-		data[j] = rand.Float64()
-	}
-	expected := []float64{0, 0, 0, 1}
-
-	for i := 0; i < 11; i++ {
-		n.ForwardFeed(data)
-		cost, prime := n.CostFunction.Cost(n.OutputLayer.Outputs, expected)
-		if i%10 == 0 {
-			fmt.Printf("Iteration %v:\n", i)
-			fmt.Println(cost)
-			fmt.Println(averageCost(cost))
-			fmt.Println(n.OutputLayer.Biases)
-			fmt.Println(n.String())
+	/*
+		rand.Seed(time.Now().UnixNano())
+		data := make([]float64, 10)
+		for j := 0; j < 10; j++ {
+			data[j] = rand.Float64()
 		}
+		expected := []float64{0, 0, 0, 1}
 
-		n.Backpropagate(prime)
-	}
+		for i := 0; i < 21; i++ {
+			n.ForwardFeed(data)
+			cost, prime := n.CostFunction.Cost(n.OutputLayer.Outputs, expected)
+			if i%10 == 0 {
+				fmt.Printf("Iteration %v:\n", i)
+				fmt.Println(cost)
+				fmt.Println(averageCost(cost))
+				fmt.Println(n.OutputLayer.Biases)
+				fmt.Println(n.String())
+			}
 
-	//n.TrainMnist()
-	//fmt.Println("After training:")
-	//fmt.Println(n.String())
-	//n.TestMnist()
+			n.Backpropagate(prime)
+		}
+	*/
+
+	n.TrainMnist()
+	fmt.Println("After training:")
+	fmt.Println(n.String())
+	n.TestMnist()
 }
 
 func averageCost(val []float64) float64 {

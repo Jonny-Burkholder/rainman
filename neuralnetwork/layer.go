@@ -93,7 +93,7 @@ func (l *layer) stepBack(rate float64, prime []float64) []float64 {
 func (l *layer) updateWeights(rate float64, prime []float64) {
 	for i := 0; i < len(prime); i++ {
 		for j := 0; j < len(l.Inputs); j++ {
-			nudge := rate * prime[i] * l.Inputs[j] * l.Activation.derivative(l.Outputs[i])
+			nudge := (rate * prime[i] * l.Inputs[j] * l.Activation.derivative(l.Outputs[i])) / float64(len(l.Inputs))
 			l.Weights[j][i] -= nudge
 		}
 	}
@@ -103,7 +103,7 @@ func (l *layer) updateWeights(rate float64, prime []float64) {
 func (l *layer) updateBias(rate float64, prime []float64) {
 	for i := range prime {
 		for j := range l.Biases {
-			l.Biases[j] -= (rate * prime[i] * l.Activation.derivative(l.Outputs[i]))
+			l.Biases[j] -= (rate * prime[i] * l.Activation.derivative(l.Outputs[i])) / float64(len(l.Biases))
 		}
 	}
 }
@@ -113,9 +113,49 @@ func (l *layer) newPrime() []float64 {
 	newPrime := make([]float64, len(l.Inputs))
 	for i := 0; i < len(l.Outputs); i++ {
 		for j := 0; j < len(l.Inputs); j++ {
-			newPrime[j] += l.ErrorPrime[i] * l.Weights[j][i]
+			newPrime[j] += (l.ErrorPrime[i] * l.Weights[j][i]) / float64(len(newPrime))
 		}
 	}
-	fmt.Println(newPrime)
+	//fmt.Println(newPrime)
 	return newPrime
+}
+
+func (l *layer) String(w ...bool) string {
+	s := ""
+
+	if len(w) > 0 && w[0] == false {
+
+	} else {
+
+		s += "\nLayer Weights:\n"
+		for i := 0; i < len(l.Weights); i++ {
+			for j := 0; j < len(l.Weights[i]); j++ {
+				s += fmt.Sprintf("%1.4f ", l.Weights[i][j])
+			}
+		}
+	}
+
+	s += "\nLayer Biases:\n"
+	for i := 0; i < len(l.Biases); i++ {
+		s += fmt.Sprintf("%1.4f ", l.Biases[i])
+	}
+
+	s += "\nLayer inputs:\n"
+	for i := 0; i < len(l.Inputs); i++ {
+		s += fmt.Sprintf("%1.4f ", l.Inputs[i])
+	}
+
+	s += "\nLayer outputs:\n"
+	for i := 0; i < len(l.Outputs); i++ {
+		s += fmt.Sprintf("%1.4f ", l.Outputs[i])
+	}
+
+	s += "\nLayer error:\n"
+	for i := 0; i < len(l.ErrorPrime); i++ {
+		s += fmt.Sprintf("%1.4f ", l.ErrorPrime[i])
+	}
+
+	s += "\n"
+
+	return s
 }

@@ -27,10 +27,13 @@ func (n *Network) TrainMnist() {
 	//let's set some variables
 	var avgErr float64 = 1000
 	i := 0
-	chunkSize := n.Config.StochasticMax
+	chunkSize := 3
+
+	iter := 0
 
 	//run until either we run out of data, or the config file tells us to stop
-	for i*chunkSize < data.N && i < n.Config.MaxSteps && avgErr > n.Config.TrainingCondition {
+	//honestly not really sure why I'm even using chunk sizes here
+	for i*chunkSize < data.N && i < n.Config.MaxSteps && avgErr > n.Config.TrainingCondition && i < 2 {
 		//reset average error
 		avgErr = 0
 
@@ -53,20 +56,15 @@ func (n *Network) TrainMnist() {
 			cost, prime := n.CostFunction.Cost(out, expected)
 			n.Backpropagate(prime)
 			avgErr += averageCost(cost)
+			fmt.Printf("\nIteration %v:\n", iter)
+			fmt.Println(n.String())
+			iter++
 		}
 
 		//it is *average* error, after all
 		avgErr /= float64(chunkSize)
 
 		i++
-
-		if i*chunkSize >= data.N {
-			fmt.Println("ran out of data!")
-		} else if i >= n.Config.MaxSteps {
-			fmt.Println("too many steps!")
-		} else if avgErr <= n.Config.TrainingCondition {
-			fmt.Printf("Error is so small! [%v]", avgErr)
-		}
 
 	}
 
@@ -100,14 +98,15 @@ func unpackExample(e [][]uint8) []float64 {
 
 	for i := 0; i < len(e); i++ {
 		for j := 0; j < len(e[0]); j++ {
+			sig := Sigmoid{}
 			//have to cap values at 100 for the sigmoid to work, because of how golang's
 			//math.Exp() function works. Honestly... I'm not even sure why the mnist values
 			//go so high. I'm sure I could figure out a useful way to squishify them between
 			//0 and 100, but... what's the point lol
 			if e[i][j] < 100 {
-				res[k] = float64(e[i][j]) / 100 //there's probably a way bitshift this, instead of... this
+				res[k] = sig.fire(float64(e[i][j])) //there's probably a way bitshift this, instead of... this
 			} else {
-				res[k] = 100
+				res[k] = sig.fire(100)
 			}
 			k++
 		}

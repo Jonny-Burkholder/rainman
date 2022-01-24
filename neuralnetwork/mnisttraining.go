@@ -49,7 +49,7 @@ func (n *Network) TrainMnist() {
 			expected[data.Data[j].Digit] = 1.0
 			cost, prime := n.CostFunction.Cost(out, expected)
 			n.Backpropagate(prime)
-			avgErr += cost
+			avgErr += averageCost(cost)
 		}
 
 		//it is *average* error, after all
@@ -59,6 +59,16 @@ func (n *Network) TrainMnist() {
 
 	}
 
+}
+
+//compressCost averages a slice of cost
+//values into a single value
+func averageCost(cost []float64) float64 {
+	var res float64
+	for _, num := range cost {
+		res += num
+	}
+	return res / float64(len(cost))
 }
 
 //this is going to be expensive. Whoops

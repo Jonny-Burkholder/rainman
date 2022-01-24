@@ -67,17 +67,12 @@ func (n *Network) ForwardFeed(input []float64) []float64 {
 //it to the network's output to calculate the cost using the
 //config's cost function. It will then send this cost up through
 //each layer using the backpropagation algorithm
-func (n *Network) Backpropagate(costPrime float64) {
-	//as far as I'm aware, there's really no good reason to do
-	//this all in reverse. Heck, we could do em concurrently if
-	//my understanding of the thing. But hey, I'll stick with
-	//convention until I'm comfortable enough with the calculus
-	//to be positive
-	n.OutputLayer.stepBack(costPrime, n.Config.LearningRate)
+func (n *Network) Backpropagate(prime []float64) {
+	prime = n.OutputLayer.stepBack(n.Config.LearningRate, prime)
 	for i := len(n.HiddenLayers) - 1; i >= 0; i-- {
-		n.HiddenLayers[i].stepBack(costPrime, n.Config.LearningRate)
+		prime = n.HiddenLayers[i].stepBack(n.Config.LearningRate, prime)
 	}
-	n.InputLayer.stepBack(costPrime, n.Config.LearningRate)
+	n.InputLayer.stepBack(n.Config.LearningRate, prime)
 }
 
 //String is a stringer

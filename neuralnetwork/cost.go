@@ -1,7 +1,8 @@
 package neuralnetwork
 
 type costfunction interface {
-	Cost([]float64, []float64) (float64, float64)
+	//predicted, expected
+	Cost([]float64, []float64) ([]float64, []float64)
 }
 
 func getCost(i int) costfunction {
@@ -21,7 +22,10 @@ func getCost(i int) costfunction {
 type meanSquared struct{}
 
 //cost is the cost function of meanSquared
-func (m meanSquared) Cost(actual, expected []float64) (float64, float64) {
+//I mean if I'm doing errors by neuron, not by layer, do I even need to
+//square anything? I mean I guess so, since otherwise error prime is a
+//constant, which is useless
+func (m meanSquared) Cost(actual, expected []float64) ([]float64, []float64) {
 	//crash if len(actual) != len(expected)? Who knows
 
 	var length int
@@ -32,23 +36,24 @@ func (m meanSquared) Cost(actual, expected []float64) (float64, float64) {
 		length = len(actual)
 	}
 
-	var cost, costPrime float64
+	cost := make([]float64, length)
+	prime := make([]float64, length)
 
 	for i := 0; i < length; i++ {
 		a := expected[i] - actual[i]
 		//I feel pretty confident this is the wrong algorithm for costPrime...
 		//isn't is supposed to always be positive?
-		cost += a * a
-		costPrime += a * -1
+		cost[i] = a * a
+		prime[i] = a * -1
 	}
 
-	return cost, costPrime
+	return cost, prime
 }
 
 //crossEntropy. What does it do, you might ask? No clue
 type crossEntropy struct{}
 
 //cost is the cost function for crossEntropy
-func (c *crossEntropy) Cost(actual, expected []float64) (float64, float64) {
-	return 0, 0
+func (c *crossEntropy) Cost(actual, expected []float64) ([]float64, []float64) {
+	return nil, nil //huzzah for implicit pointer operations!
 }

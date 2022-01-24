@@ -12,6 +12,7 @@ type layer struct {
 	Weights    [][]float64
 	Biases     []float64
 	Outputs    []float64
+	ErrorPrime []float64
 	Activation activation
 }
 
@@ -67,7 +68,7 @@ func (l *layer) fire(input []float64) []float64 {
 	//I forget the formula, but I think this is right. Send the sum of inputs*weights
 	//through the activation function, *then* add the bias
 	for i := range l.Outputs {
-		l.Outputs[i] = l.Activation.fire(l.Outputs[i]) + l.Biases[i]
+		l.Outputs[i] = l.Activation.fire((l.Outputs[i]) + l.Biases[i])
 	}
 
 	return l.Outputs
@@ -77,26 +78,42 @@ func (l *layer) fire(input []float64) []float64 {
 //neural network. The function then finds the derivative of
 //the cost with respect to the layer's activations and biases,
 //respectively, and takes a small step towards the gradient's
-//local minimum
-func (l *layer) stepBack(costPrime, rate float64) {
-	l.updateWeights(costPrime, rate)
-	l.updateBias(costPrime, rate)
+//local minimum. It returns a slice of errorPrime for the
+//previous layer
+func (l *layer) stepBack(rate float64, prime []float64) []float64 {
+	l.updateWeights(rate, prime)
+	l.updateBias(rate, prime)
+	l.ErrorPrime = prime
+	return l.newPrime()
 }
 
 //updateWeights - yep
-func (l *layer) updateWeights(costPrime, rate float64) {
-	//for each weight
-	for i := 0; i < len(l.Weights); i++ {
-		for j := 0; j < len(l.Weights[i]); j++ {
-			nudge := (rate * costPrime * l.Inputs[i] * l.Activation.derivative(l.Outputs[j]))
-			l.Weights[i][j] -= nudge
+//this is confusing as crap
+func (l *layer) updateWeights(rate float64, prime []float64) {
+	for i := 0; i < len(prime); i++ {
+		for j := 0; j < len(l.Inputs); j++ {
+			nudge := rate * prime[i] * l.Inputs[j] * l.Activation.derivative(l.Outputs[i])
+			l.Weights[j][i] -= nudge
 		}
 	}
 }
 
 //updateBias
-func (l *layer) updateBias(costPrime, rate float64) {
-	for i, bias := range l.Biases {
-		bias -= (rate * costPrime * l.Activation.derivative(l.Outputs[i]))
+func (l *layer) updateBias(rate float64, prime []float64) {
+	for i := range prime {
+		for j := range l.Biases {
+			l.Biases[j] -= (rate * prime[i] * l.Activation.derivative(l.Outputs[i]))
+		}
 	}
+}
+
+//newPrime gives the error values for the layer one step back
+func (l *layer) newPrime() []float64 {
+	newPrime := make([]float64, len(l.Inputs))
+	for i := 0; i < len(l.Outputs); i++ {
+		for j := 0; j < len(l.Inputs); j++ {
+			newPrime[j] += l.ErrorPrime[i] * l.Weights[j][i]
+		}
+	}
+	return newPrime
 }

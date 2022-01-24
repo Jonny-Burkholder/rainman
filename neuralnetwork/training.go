@@ -46,26 +46,36 @@ func (n *Network) Train(t *TrainingData) {
 			chunksize = len(epoch)
 		}
 		//now let's rip through some training data
-		var averageCost float64
-		var costPrime float64
+		var avgCost float64
+		cost := make([]float64, len(n.OutputLayer.Outputs))
+		prime := make([]float64, len(cost))
 		currentErr := 100.00 //*hopefully* this is bigger than everyone's training condition
 		k := 0
 		iter := 1
 		for k*chunksize <= len(epoch) && k <= n.Config.MaxSteps && currentErr > n.Config.TrainingCondition {
 			for m := k * chunksize; m < iter*chunksize; m++ {
 				res := n.ForwardFeed(example.Data[epoch[m]].Inputs)
-				cost, prime := n.CostFunction.Cost(res, example.Data[epoch[m]].Expected)
-				currentErr = cost
-				averageCost += cost
-				costPrime += prime
+				c, p := n.CostFunction.Cost(res, example.Data[epoch[m]].Expected)
+				currentErr = averageCost(cost)
+				avgCost += currentErr
+				for l := range c {
+					cost[l] += c[l]
+					prime[l] += p[l]
+				}
 			}
-			n.Backpropagate(costPrime / float64(iter))
+			n.Backpropagate(smush(float64(chunksize), prime))
 			k++
 			iter++
 		}
 		//something broke the loop, hurrah! Now that we've got our error data, let's backprop
-		averageCost /= float64(iter)
-		costPrime /= float64(iter)
+		avgCost /= float64(iter)
 	}
 
+}
+
+func smush(n float64, val []float64) []float64 {
+	for i := 0; i < len(val); i++ {
+		val[i] /= n
+	}
+	return val
 }

@@ -31,6 +31,9 @@ func (n *Network) TrainMnist() {
 
 	//run until either we run out of data, or the config file tells us to stop
 	for i*chunkSize < data.N && i < n.Config.MaxSteps && avgErr > n.Config.TrainingCondition {
+		//reset average error
+		avgErr = 0
+
 		//just to make sure we aren't hanging anywhere
 		if i%100 == 0 {
 			fmt.Printf("Training %v examples...\n", i)
@@ -56,6 +59,14 @@ func (n *Network) TrainMnist() {
 		avgErr /= float64(chunkSize)
 
 		i++
+
+		if i*chunkSize >= data.N {
+			fmt.Println("ran out of data!")
+		} else if i >= n.Config.MaxSteps {
+			fmt.Println("too many steps!")
+		} else if avgErr <= n.Config.TrainingCondition {
+			fmt.Printf("Error is so small! [%v]", avgErr)
+		}
 
 	}
 

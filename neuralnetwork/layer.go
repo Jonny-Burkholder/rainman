@@ -1,6 +1,7 @@
 package neuralnetwork
 
 import (
+	"fmt"
 	"math/rand"
 	"time"
 )
@@ -68,7 +69,7 @@ func (l *layer) fire(input []float64) []float64 {
 	//I forget the formula, but I think this is right. Send the sum of inputs*weights
 	//through the activation function, *then* add the bias
 	for i := range l.Outputs {
-		l.Outputs[i] = l.Activation.fire((l.Outputs[i]) + l.Biases[i])
+		l.Outputs[i] = (l.Activation.fire(l.Outputs[i]) + l.Biases[i])
 	}
 
 	return l.Outputs
@@ -115,5 +116,6 @@ func (l *layer) newPrime() []float64 {
 			newPrime[j] += l.ErrorPrime[i] * l.Weights[j][i]
 		}
 	}
+	fmt.Println(newPrime)
 	return newPrime
 }

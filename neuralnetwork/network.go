@@ -80,7 +80,7 @@ func (n *Network) String() string {
 
 	var s string
 
-	s += fmt.Sprintf("Neural Network:,\n\nInput Layer: %v neurons\nOutput Layer: %vneurons\nHidden Layers: %v\n\n", len(n.InputLayer.Inputs), len(n.OutputLayer.Outputs), len(n.HiddenLayers))
+	s += fmt.Sprintf("Neural Network:,\n\nInput Layer: %v neurons\nOutput Layer: %v neurons\nHidden Layers: %v\n\n", len(n.InputLayer.Inputs), len(n.OutputLayer.Outputs), len(n.HiddenLayers))
 
 	hn := 0
 

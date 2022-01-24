@@ -9,7 +9,8 @@ import (
 )
 
 func main() {
-	n, err := neuralnetwork.NewNetwork(neuralnetwork.DefaultConfig, 28*28, 28, 10)
+	//n, err := neuralnetwork.NewNetwork(neuralnetwork.DefaultConfig, 28*28, 28, 10)
+	n, err := neuralnetwork.NewNetwork(neuralnetwork.DefaultConfig, 10, 8, 4)
 	if err != nil {
 		panic(err)
 	}
@@ -18,18 +19,35 @@ func main() {
 
 	rand.Seed(time.Now().UnixNano())
 	data := make([]float64, 10)
-	expected := []float64{0, 0, 0, 0, 4, 0, 0, 0, 0, 0}
+	for j := 0; j < 10; j++ {
+		data[j] = rand.Float64()
+	}
+	expected := []float64{0, 0, 0, 1}
 
-	for i := 0; i < 5; i++ {
-		for j := 0; j < 10; j++ {
-			data[j] = rand.Float64()
-		}
+	for i := 0; i < 11; i++ {
 		n.ForwardFeed(data)
-		_, prime := n.CostFunction.Cost(n.OutputLayer.Outputs, expected)
+		cost, prime := n.CostFunction.Cost(n.OutputLayer.Outputs, expected)
+		if i%10 == 0 {
+			fmt.Printf("Iteration %v:\n", i)
+			fmt.Println(cost)
+			fmt.Println(averageCost(cost))
+			fmt.Println(n.OutputLayer.Biases)
+			fmt.Println(n.String())
+		}
+
 		n.Backpropagate(prime)
 	}
+
 	//n.TrainMnist()
-	fmt.Println("After training:")
-	fmt.Println(n.String())
+	//fmt.Println("After training:")
+	//fmt.Println(n.String())
 	//n.TestMnist()
+}
+
+func averageCost(val []float64) float64 {
+	var res float64
+	for i := 0; i < len(val); i++ {
+		res += val[i]
+	}
+	return res / float64(len(val))
 }

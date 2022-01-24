@@ -22,23 +22,25 @@ type Sigmoid struct{}
 //just have one modular relu activation that covers any base
 //want
 type Relu struct {
-	Leak     bool
 	Cap      bool
 	LeakAmnt float64
 	CapAmnt  float64
 }
 
-func relu(leak ...float64) *Relu {
-	r := Relu{}
-	if len(leak) > 0 {
-		r.Leak = true
-		r.LeakAmnt = leak[0]
-		if len(leak) > 1 && leak[1] > 1 {
-			r.Cap = true
-			r.CapAmnt = leak[1]
+func relu(leak float64, cap ...float64) *Relu {
+	capped := false
+	var amt float64
+	if len(cap) > 0 {
+		if cap[0] > 0 {
+			capped = true
+			amt = cap[0]
 		}
 	}
-	return &r
+	return &Relu{
+		Cap:      capped,
+		LeakAmnt: leak,
+		CapAmnt:  amt,
+	}
 }
 
 type Linear struct{}
@@ -53,12 +55,12 @@ type Swish struct {
 	Sigmoid *Sigmoid
 }
 
-func getActivation(activation int, leak ...float64) activation {
+func getActivation(activation int, leak float64, cap ...float64) activation {
 	switch activation {
 	case 0:
 		return &Sigmoid{}
 	case 1:
-		return relu(leak...)
+		return relu(leak, cap...)
 	case 2:
 		return &Linear{}
 	case 3:
@@ -72,7 +74,7 @@ func getActivation(activation int, leak ...float64) activation {
 			Sigmoid: &Sigmoid{},
 		}
 	default:
-		return relu(leak...)
+		return relu(leak, cap...)
 	}
 }
 
@@ -86,13 +88,9 @@ func (s *Sigmoid) fire(a float64) float64 {
 //a, and returns a if the input is greater than zero. Otherwise
 //the function returns 0
 func (r *Relu) fire(a float64) float64 {
-	if a < 0 {
-		if r.Leak {
-			return r.LeakAmnt
-		}
-		return 0
-	}
-	if r.Cap {
+	if a <= 0 {
+		return r.LeakAmnt
+	} else if r.Cap {
 		if a > r.CapAmnt {
 			return r.CapAmnt
 		}

@@ -42,7 +42,7 @@ func (n *Network) newLayer(inputs, outputs, activationType int) *layer {
 	var a activation
 
 	if activationType != 1 {
-		a = getActivation(activationType)
+		a = getActivation(activationType, n.Config.ReluLeak, n.Config.ReluCap)
 	} else {
 		a = getActivation(activationType, n.Config.ReluLeak)
 	}
@@ -82,10 +82,11 @@ func (l *layer) fire(input []float64) []float64 {
 //local minimum. It returns a slice of errorPrime for the
 //previous layer
 func (l *layer) stepBack(rate float64, prime []float64) []float64 {
+	l.ErrorPrime = prime
+	new := l.newPrime(rate)
 	l.updateWeights(rate, prime)
 	l.updateBias(rate, prime)
-	l.ErrorPrime = prime
-	return l.newPrime()
+	return new
 }
 
 //updateWeights - yep
@@ -109,11 +110,11 @@ func (l *layer) updateBias(rate float64, prime []float64) {
 }
 
 //newPrime gives the error values for the layer one step back
-func (l *layer) newPrime() []float64 {
+func (l *layer) newPrime(rate float64) []float64 {
 	newPrime := make([]float64, len(l.Inputs))
 	for i := 0; i < len(l.Outputs); i++ {
 		for j := 0; j < len(l.Inputs); j++ {
-			newPrime[j] += (l.ErrorPrime[i] * l.Weights[j][i]) / float64(len(newPrime))
+			newPrime[j] += (l.ErrorPrime[i] * l.Weights[j][i])
 		}
 	}
 	//fmt.Println(newPrime)

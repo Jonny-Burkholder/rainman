@@ -15,10 +15,8 @@ func (s *Sigmoid) derivative(x float64) float64 {
 func (r *Relu) derivative(x float64) float64 {
 	if x > 0 {
 		return 1
-	} else if r.Leak {
-		return r.LeakAmnt
 	} else {
-		return 0
+		return r.LeakAmnt
 	}
 }
 

@@ -28,17 +28,16 @@ func (n *Network) TrainMnist() {
 	var avgErr float64 = 1000
 	i := 0
 	chunkSize := 3
-
-	iter := 0
+	iter := 1
 
 	//run until either we run out of data, or the config file tells us to stop
 	//honestly not really sure why I'm even using chunk sizes here
-	for i*chunkSize < data.N && i < n.Config.MaxSteps && avgErr > n.Config.TrainingCondition && i < 2 {
+	for i*chunkSize < data.N && i < 1000 && avgErr > n.Config.TrainingCondition {
 		//reset average error
 		avgErr = 0
 
 		//just to make sure we aren't hanging anywhere
-		if i%100 == 0 {
+		if i%500 == 0 {
 			fmt.Printf("Training %v examples...\n", i)
 		}
 		//let's grab the index numbers for this chunk
@@ -56,8 +55,8 @@ func (n *Network) TrainMnist() {
 			cost, prime := n.CostFunction.Cost(out, expected)
 			n.Backpropagate(prime)
 			avgErr += averageCost(cost)
-			fmt.Printf("\nIteration %v:\n", iter)
-			fmt.Println(n.String())
+			//fmt.Printf("\nIteration %v\n", iter)
+			//fmt.Println(n.String())
 			iter++
 		}
 
@@ -98,16 +97,11 @@ func unpackExample(e [][]uint8) []float64 {
 
 	for i := 0; i < len(e); i++ {
 		for j := 0; j < len(e[0]); j++ {
-			sig := Sigmoid{}
 			//have to cap values at 100 for the sigmoid to work, because of how golang's
 			//math.Exp() function works. Honestly... I'm not even sure why the mnist values
 			//go so high. I'm sure I could figure out a useful way to squishify them between
 			//0 and 100, but... what's the point lol
-			if e[i][j] < 100 {
-				res[k] = sig.fire(float64(e[i][j])) //there's probably a way bitshift this, instead of... this
-			} else {
-				res[k] = sig.fire(100)
-			}
+			res[k] = float64(e[i][j])
 			k++
 		}
 	}
@@ -116,15 +110,15 @@ func unpackExample(e [][]uint8) []float64 {
 
 //decide is a helper function that picks the highest output of the network
 func decide(res []float64) (int, float64) {
-	h := 0
-	var c float64
+	digit := 0
+	var certainty float64
 	for i, num := range res {
-		if num > c {
-			h = i
-			c = num
+		if num > certainty {
+			digit = i
+			certainty = num
 		}
 	}
-	return h, c
+	return digit, certainty
 }
 
 //TestMnist will test a fully-trained network to see how much of the test
@@ -139,18 +133,24 @@ func (n *Network) TestMnist() {
 	if err != nil {
 		panic(err)
 	}
-	for i := 0; i < data.N; i++ {
-		if i%1000 == 0 {
-			fmt.Printf("Testing %v examples...", i)
-		}
+	for i := 0; i < 10; i++ {
+		//if i%1000 == 0 {
+		fmt.Printf("Testing %v examples...\n", i)
+		//}
 		input := unpackExample(data.Data[i].Image)
-		num, certainty := decide(n.ForwardFeed(input))
+		res := n.ForwardFeed(input)
+		num, certainty := decide(res)
 		if num != data.Data[i].Digit {
 			incorrect++
 		} else {
 			correct++
 		}
 		avgCertainty += certainty
+
+		fmt.Printf("Predicted: %v\n", num)
+		fmt.Println(res)
+		fmt.Printf("Expected: %v\n", data.Data[i].Digit)
+		mnist.PrintImage(data.Data[i].Image)
 	}
 
 	avgCertainty /= float64(data.N)

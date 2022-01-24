@@ -1,19 +1,17 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/Jonny-Burkholder/neural-network/neuralnetwork"
 )
 
 func main() {
-	n, err := neuralnetwork.NewNetwork(neuralnetwork.DefaultConfig, 28*28, 28, 10)
+	n, err := neuralnetwork.NewNetwork(neuralnetwork.DefaultConfig, 28*28, 48, 28, 10)
 	//n, err := neuralnetwork.NewNetwork(neuralnetwork.DefaultConfig, 10, 8, 4)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("Before training:")
-	fmt.Println(n.String())
+	//fmt.Println("Before training:")
+	//fmt.Println(n.String())
 
 	/*
 		rand.Seed(time.Now().UnixNano())
@@ -39,8 +37,8 @@ func main() {
 	*/
 
 	n.TrainMnist()
-	fmt.Println("After training:")
-	fmt.Println(n.String())
+	//fmt.Println("After training:")
+	//fmt.Println(n.String())
 	n.TestMnist()
 }
 

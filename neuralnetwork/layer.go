@@ -94,7 +94,7 @@ func (l *layer) stepBack(rate float64, prime []float64) []float64 {
 func (l *layer) updateWeights(rate float64, prime []float64) {
 	for i := 0; i < len(prime); i++ {
 		for j := 0; j < len(l.Inputs); j++ {
-			nudge := (rate * prime[i] * l.Inputs[j] * l.Activation.derivative(l.Outputs[i])) / float64(len(l.Inputs))
+			nudge := (rate * prime[i] * l.Inputs[j] * l.Activation.derivative(l.Outputs[i]))
 			l.Weights[j][i] -= nudge
 		}
 	}
@@ -104,7 +104,7 @@ func (l *layer) updateWeights(rate float64, prime []float64) {
 func (l *layer) updateBias(rate float64, prime []float64) {
 	for i := range prime {
 		for j := range l.Biases {
-			l.Biases[j] -= (rate * prime[i] * l.Activation.derivative(l.Outputs[i])) / float64(len(l.Biases))
+			l.Biases[j] -= (rate * prime[i] * l.Activation.derivative(l.Outputs[i]))
 		}
 	}
 }

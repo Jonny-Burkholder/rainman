@@ -1,6 +1,6 @@
 Sensitivity to weight = 
 
---Derivative of cost function-- --Derivative of neuron activation--  --Derivative of neuron input-- 
+--Derivative of cost function-- --Derivative of neuron activation--  --Derivative of the previous neuron's output with respect to that weight-- 
 
 2(actualOutput - desiredOutput) * activationPrime(neuronInput) * (Z(L)Prime)
 

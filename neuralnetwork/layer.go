@@ -1,161 +1,162 @@
 package neuralnetwork
 
 import (
+	"fmt"
 	"math/rand"
 	"time"
 )
 
-var LayerTypes []string = []string{"Synapse", "Hidden", "Output"}
-var nilLayer = &Layer{}
-
-//Layer is a two-dimensional array of neurons. I guess. How does this work?
-type Layer struct {
-	LayerType      int
-	ActivationType int
-	Neurons        []*Neuron
-	Weights        [][]float64 //Matrix of connections to next layer
-	Output         []float64   //need some persistence here to backpropogate
+//layer holds an abstract layer of neurons represented
+//by a slice of inputs, and a layer activation function
+type layer struct {
+	Inputs     []float64
+	Weights    [][]float64
+	Biases     []float64
+	Outputs    []float64
+	ErrorPrime []float64
+	Activation activation
 }
 
-//NewLayer takes two inputs, nsize and wsize, where nsize is the number of neurons
-//in the layer, and wsize is the number of weights for each neuron, aka the number
-//of neurons in the next layer. The function returns a new layer
-func NewLayer(nsize, wsize, ltype, atype int) *Layer {
-
-	if ltype > len(LayerTypes) {
-		//return an error
-	}
-
-	//activation type should be handled here, not at the neuron level
+//newLayer returns a new layer with a given number of inputs
+//and outputs, and an activation function, and pseudo-random
+//values for the weights and biases
+func (n *Network) newLayer(inputs, outputs, activationType int) *layer {
 
 	rand.Seed(time.Now().UnixNano())
 
-	n := make([]*Neuron, nsize)
-	for i := 0; i < nsize; i++ {
-		n[i] = NewNeuron()
-	}
+	w := make([][]float64, inputs)
 
-	//each row of the weights matrix will represent a neuron in the current layer
-	w := make([][]float64, nsize)
-	for i := 0; i < nsize; i++ {
-		//and each column in each row will represent a neuron in the current layer's
-		//relationship to a neuron in the next layer
-		w[i] = make([]float64, wsize)
-		for j := 0; j < wsize; j++ {
-			//rando-fill those weights
+	for i := 0; i < inputs; i++ {
+		w[i] = make([]float64, outputs)
+		for j := 0; j < outputs; j++ {
 			w[i][j] = rand.Float64()
 		}
 	}
 
-	return &Layer{
-		LayerType:      ltype,
-		ActivationType: atype,
-		Neurons:        n,
-		Weights:        w,
-		Output:         make([]float64, wsize),
+	b := make([]float64, outputs)
+
+	for i := 0; i < outputs; i++ {
+		b[i] = rand.Float64()
 	}
 
+	var a activation
+
+	if activationType != 1 {
+		a = getActivation(activationType, n.Config.ReluLeak)
+	} else {
+		a = getActivation(activationType, n.Config.ReluLeak, n.Config.ReluCap)
+	}
+
+	return &layer{
+		Inputs:     make([]float64, inputs),
+		Weights:    w,
+		Biases:     b,
+		Outputs:    make([]float64, outputs),
+		Activation: a,
+	}
 }
 
-//Activate does a nasty matrix multiplication thing
-//Evemtially I'll bring in an optimized matrix library,
-//but for now I'll hand-roll it
-func (l *Layer) Activate(inputs []float64) []float64 {
-	if l.LayerType != 2 {
-		res := make([]float64, len(l.Weights[0])) //there's gotta be a more clear way to do this
-		//Send each input through its respective neuron
-		for i := 0; i < len(inputs); i++ {
-			a := l.Neurons[i].Fire(inputs[i])
-			//Feed the output from each neuron through the weights matrix and =+ the
-			//dot product to the jth index of res
-			for j := 0; j < len(res); j++ {
-				res[j] += l.Weights[i][j] * a
+//fire takes inputs and does the thing
+func (l *layer) fire(input []float64) []float64 {
+	//Yep, this is redundant, I know
+	l.Inputs = input
+	for i := 0; i < len(l.Inputs); i++ {
+		for j := 0; j < len(l.Outputs); j++ {
+			l.Outputs[j] += l.Inputs[i] * l.Weights[i][j]
+		}
+	}
+
+	//I forget the formula, but I think this is right. Send the sum of inputs weights
+	//through the activation function, *then* add the bias
+	for i := range l.Outputs {
+		l.Outputs[i] = l.Activation.fire(l.Outputs[i]/float64(len(l.Weights[i]))) + l.Biases[i]
+	}
+
+	return l.Outputs
+}
+
+//stepBack takes in a slice representing the cost of the
+//neural network. The function then finds the derivative of
+//the cost with respect to the layer's activations and biases,
+//respectively, and takes a small step towards the gradient's
+//local minimum. It returns a slice of errorPrime for the
+//previous layer
+func (l *layer) stepBack(rate float64, prime []float64) []float64 {
+	l.ErrorPrime = prime
+	new := l.newPrime(rate)
+	l.updateWeights(rate, prime)
+	l.updateBias(rate, prime)
+	return new
+}
+
+//updateWeights - yep
+//this is confusing as crap
+func (l *layer) updateWeights(rate float64, prime []float64) {
+	for i := 0; i < len(prime); i++ {
+		for j := 0; j < len(l.Inputs); j++ {
+			nudge := (rate * prime[i] * l.Inputs[j] * l.Activation.derivative(l.Outputs[i])) / float64(len(l.Inputs))
+			l.Weights[j][i] -= nudge
+		}
+	}
+}
+
+//updateBias
+func (l *layer) updateBias(rate float64, prime []float64) {
+	for i := range prime {
+		for j := range l.Biases {
+			l.Biases[j] -= (rate * prime[i] * l.Activation.derivative(l.Outputs[i])) / float64(len(l.Biases))
+		}
+	}
+}
+
+//newPrime gives the error values for the layer one step back
+func (l *layer) newPrime(rate float64) []float64 {
+	newPrime := make([]float64, len(l.Inputs))
+	for i := 0; i < len(l.Outputs); i++ {
+		for j := 0; j < len(l.Inputs); j++ {
+			newPrime[j] += (l.ErrorPrime[i] * l.Weights[j][i]) / float64(len(l.Inputs))
+		}
+	}
+	//fmt.Println(newPrime)
+	return newPrime
+}
+
+func (l *layer) String(w ...bool) string {
+	s := ""
+
+	if len(w) > 0 && w[0] == false {
+
+	} else {
+
+		s += "\nLayer Weights:\n"
+		for i := 0; i < len(l.Weights); i++ {
+			for j := 0; j < len(l.Weights[i]); j++ {
+				s += fmt.Sprintf("%1.4f ", l.Weights[i][j])
 			}
 		}
-		//return that vector
-		return res
-	} else {
-		res := make([]float64, len(inputs))
-		for i := 0; i < len(inputs); i++ {
-			res[i] = l.Neurons[i].Fire(inputs[i])
-			l.Output[i] = res[i]
-		}
-		return res
-	}
-}
-
-//ActivatePrime does the derivative thing. Sorry, I'm tired and in a hurry
-func (l *Layer) ActivatePrime(z float64) float64 {
-	var res float64
-	switch l.ActivationType {
-	//not going to do the tedious work of inputing these all right now
-	default:
-		res = LeakyRelu6Prime(z, .001)
-	}
-	return res
-}
-
-//WeighPrimes takes a slice of float64 as its input. This slice represents
-//the derivative of the cost of each neuron in this layer, which has
-//already been calculated elsewhere. The function returns a slice of
-//float64 representing a hint, if you will, of how much to nudge the
-//weights
-func (l *Layer) WeightPrime(costPrime []float64, previous *Layer) [][]float64 { //first return is weight, second return is bias
-	//res represents... something. a slice of somethings
-	res := make([][]float64, len(previous.Neurons))
-
-	//for each weight in the previous layer, which we can break down as
-	//for each neuron in the last layer
-	for i := 0; i < len(previous.Neurons); i++ {
-		//working just like we did in the NewLayer function
-		res[i] = make([]float64, len(l.Neurons))
-		//for each output associated with that neuron...
-		for j := 0; j < len(l.Neurons); j++ {
-			z := previous.Output[j]
-			aPrime := l.ActivatePrime(z)
-			//derivative of the cost of the current neuron output times
-			//derivative of the activation of the current neuron times
-			//the derivative of the input of the current neuron
-			//j is the current neuron of the current layer
-			res[i][j] += costPrime[j] * aPrime * z
-		}
-	}
-	return res
-}
-
-//BiasPrime does the same thing as WeightPrime, but for Biases. And also on the current
-//layer, not the previous one? I think
-func (l *Layer) BiasPrime(costPrime []float64, previous *Layer) []float64 {
-	res := make([]float64, len(l.Neurons))
-
-	for i := 0; i < len(l.Neurons); i++ {
-		res[i] = costPrime[i] * l.ActivatePrime(previous.Output[i])
-	}
-	return res
-}
-
-//Adjust takes in two slices, which are the derivative of the weights
-//and biases of the layer, and a float, which is the learning rate. The
-//weights and biases are then adjusted by subtracting their derivative
-//multiplied by the learning rate
-func (l *Layer) Adjust(weightPrime [][]float64, biasPrime []float64, rate float64) error { //gut check says there should be an error here
-
-	for i := 0; i < len(l.Neurons); i++ {
-		l.Neurons[i].reBias(biasPrime[i] * rate)
-		for j := 0; j < len(l.Weights[i]); j++ {
-			l.Weights[i][j] -= (weightPrime[i][j] * rate)
-		}
 	}
 
-	return nil
-}
+	s += "\nLayer Biases:\n"
+	for i := 0; i < len(l.Biases); i++ {
+		s += fmt.Sprintf("%1.4f ", l.Biases[i])
+	}
 
-//Descend puts all the pieces together. It also needs to make a return
-//so that that can be input for the next layer, but I don't know how
-//to do that
-func (l *Layer) Descend(cost, costPrime []float64, previous *Layer, rate float64) {
-	weightPrime := l.WeightPrime(cost, previous)
-	biasPrime := l.BiasPrime(costPrime, previous)
-	l.Adjust(weightPrime, biasPrime, rate)
-	//so I don't think we return anything here, I think we just use the overall network cost every time
+	s += "\nLayer inputs:\n"
+	for i := 0; i < len(l.Inputs); i++ {
+		s += fmt.Sprintf("%1.4f ", l.Inputs[i])
+	}
+
+	s += "\nLayer outputs:\n"
+	for i := 0; i < len(l.Outputs); i++ {
+		s += fmt.Sprintf("%1.4f ", l.Outputs[i])
+	}
+
+	s += "\nLayer error:\n"
+	for i := 0; i < len(l.ErrorPrime); i++ {
+		s += fmt.Sprintf("%1.4f ", l.ErrorPrime[i])
+	}
+
+	s += "\n"
+
+	return s
 }

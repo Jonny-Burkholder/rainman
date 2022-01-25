@@ -1,101 +1,81 @@
 package neuralnetwork
 
 import (
-	"fmt"
 	"math/rand"
 	"time"
 )
 
-var NilTrainingSet = &TrainingSet{}
-
-//TrainingInstance is a single instance of training data. So this might
-//be a single photo of a cat, or a face, that is "labeled" with the expected
-//network output
-type TrainingInstance struct {
+type TrainingInput struct {
 	Inputs   []float64
-	Expected []float64 //expected is what we expect the output of the neural network to be
-	//we could probably just give a single int for extpected, for the index of the output
-	//neuron that we expect to be fully activated
+	Expected []float64
 }
 
-//TrainingData is a collection of instances of a single type of data. So
-//This would be a slice of pictures only of cats, or only of faces
+type TrainingExample struct {
+	Data []*TrainingInput
+}
+
+//yes, the names are getting confusing
 type TrainingData struct {
-	Data      []*TrainingInstance
-	Cost      []float64
-	CostPrime []float64
+	//for instance, if this is mnist, there should be 10 of these
+	Examples []*TrainingExample
 }
 
-//TrainingSet is a collection of training data. This is the data type that will
-//by in large be used for the training of the network, as it will hold all
-//of the necessary data for forward and backward propogation. It's also possible
-//this could be handled from file instead of in memory, since we'll more than
-//likely be dealing with large datasets
-type TrainingSet struct {
-	Data []*TrainingData
-}
+//Train feeds training data through the nn and calculates the cost,
+//backpropogating that through the network. For now, I'm going to
+//strictly be using stochastic gradient descent
+func (n *Network) Train(t *TrainingData) {
+	rand.Seed(time.Now().UnixNano())
 
-//LoadTrainingSet loads training data from csv or json
-//it's a method because the data must match the network's
-//inputs and ouputs. Which, now that I think about it, is a
-//pretty glaring weakness in the network
-func (n *Network) LoadTrainingSet(path string) (*TrainingSet, error) {
-	return NilTrainingSet, nil
-}
+	//now we nest the crap outta some loops, you know how I do
+	for i := range t.Examples {
+		example := t.Examples[i]
+		//now we're in the training example, so we'll set some
+		//conditions and get to training
+		//**	**		**		**
+		//the epoch stores all the indices of the training inputs
+		//in a discrete manner for pseudo-random traversal
 
-//Train takes in a training set and forward feeds and
-//backpropogates is stochastically through the network. At least,
-//that's the default until I learn other gradient descent methods.
-//Honestly I'm starting to feel like the distinction between forward
-//feeding and backpropogation is largely academic
-func (n *Network) Train(t *TrainingSet) string {
-	avgErr := n.Config.TrainingCondition * 2
-	iteration := 0
-	for avgErr > n.Config.TrainingCondition && iteration <= n.Config.MaxSteps { //whichever comes first
-		//for each training data
-		for i, data := range t.Data {
-			//randomly select instances to feed forward into the network
-			indexes := n.Stochastic(len(data.Data))
-			for _, j := range indexes {
-				//add up the cost and cost prime of each of those instances
-				res, _ := n.Activate(data.Data[j].Inputs)
-				for k := 0; k < len(res); k++ {
-					diff := data.Data[i].Expected[k] - res[k]
-					data.Cost[i] += diff * diff
-					data.CostPrime[i] += diff * 2
+		epoch := make([]int, len(example.Data[0].Inputs)) //they should all be the same length... ideally
+		for j, num := range rand.Perm(len(epoch)) {
+			epoch[j] = num
+		}
+		//chunksize is how many training examples we'll train in each pass
+		chunksize := n.Config.StochasticMax
+		//let's check to make sure our chunk size is smaller than the epoch, shall we?
+		if chunksize > len(epoch) {
+			chunksize = len(epoch)
+		}
+		//now let's rip through some training data
+		var avgCost float64
+		cost := make([]float64, len(n.OutputLayer.Outputs))
+		prime := make([]float64, len(cost))
+		currentErr := 100.00 //*hopefully* this is bigger than everyone's training condition
+		k := 0
+		iter := 1
+		for k*chunksize <= len(epoch) && k <= n.Config.MaxSteps && currentErr > n.Config.TrainingCondition {
+			for m := k * chunksize; m < iter*chunksize; m++ {
+				res := n.ForwardFeed(example.Data[epoch[m]].Inputs)
+				c, p := n.CostFunction.Cost(res, example.Data[epoch[m]].Expected)
+				currentErr = averageCost(cost)
+				avgCost += currentErr
+				for l := range c {
+					cost[l] += c[l]
+					prime[l] += p[l]
 				}
 			}
-			length := float64(len(indexes))
-			for i := 0; i < len(data.Cost); i++ {
-				data.Cost[i] /= length
-				data.CostPrime[i] /= length
-			}
-			//regressively pass these values up through the network to make adjustments
-			n.BackPropogate(data.Cost, data.CostPrime)
-			//some may argue to use one trainingdata at a time, I guess we can play around with it
+			n.Backpropagate(smush(float64(chunksize), prime))
+			k++
+			iter++
 		}
-		iteration++
+		//something broke the loop, hurrah! Now that we've got our error data, let's backprop
+		avgCost /= float64(iter)
 	}
-	return fmt.Sprintf("Network successfully trained to an error of %v over %d iterations\n", avgErr, iteration) //I don't remember how to control the precision of floats with printf lol
+
 }
 
-//Stochastic takes an integer l, and returns a slice of indeces bounded between zero and l
-//The resultant slice is the fixed length of data points used for stochastic gradient descent,
-//and is used to
-func (n *Network) Stochastic(l int) []int {
-	rand.Seed(time.Now().UnixNano())
-	temp := make(map[int]bool)
-	res := make([]int, n.Config.Stochastic)
-	for i := 0; i < l; i++ {
-		//if the number is already in use, loop until a unique number is reached
-		for {
-			num := rand.Intn(l)
-			if _, ok := temp[num]; ok == !true {
-				res[i] = num
-				temp[num] = true
-				break
-			}
-		}
+func smush(n float64, val []float64) []float64 {
+	for i := 0; i < len(val); i++ {
+		val[i] /= n
 	}
-	return res
+	return val
 }

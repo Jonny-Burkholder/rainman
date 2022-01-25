@@ -32,7 +32,7 @@ func (n *Network) TrainMnist() {
 
 	//run until either we run out of data, or the config file tells us to stop
 	//honestly not really sure why I'm even using chunk sizes here
-	for i*chunkSize < data.N && i < 1 && avgErr > n.Config.TrainingCondition {
+	for i*chunkSize < data.N && i < n.Config.MaxSteps && avgErr > n.Config.TrainingCondition {
 		//reset average error
 		avgErr = 0
 
@@ -133,10 +133,11 @@ func (n *Network) TestMnist() {
 	if err != nil {
 		panic(err)
 	}
-	for i := 0; i < 10; i++ {
-		//if i%1000 == 0 {
-		fmt.Printf("Testing %v examples...\n", i)
-		//}
+	i := 0
+	for i < data.N {
+		if i%1000 == 0 {
+			fmt.Printf("Testing %v examples...\n", i)
+		}
 		input := unpackExample(data.Data[i].Image)
 		//fmt.Println("Input:")
 		//fmt.Println(input)
@@ -149,10 +150,13 @@ func (n *Network) TestMnist() {
 		}
 		avgCertainty += certainty
 
-		//fmt.Printf("Predicted: %v\n", num)
-		//fmt.Println(res)
-		//fmt.Printf("Expected: %v\n", data.Data[i].Digit)
-		//mnist.PrintImage(data.Data[i].Image)
+		if i%1000 == 0 {
+			fmt.Printf("Predicted: %v\n", num)
+			fmt.Println(res)
+			fmt.Printf("Expected: %v\n", data.Data[i].Digit)
+			mnist.PrintImage(data.Data[i].Image)
+		}
+		i++
 	}
 
 	avgCertainty /= float64(data.N)

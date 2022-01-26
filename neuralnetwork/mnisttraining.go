@@ -27,7 +27,7 @@ func (n *Network) TrainMnist() {
 	//let's set some variables
 	var avgErr float64 = 1000
 	i := 0
-	chunkSize := 30
+	chunkSize := 3
 	iter := 1
 
 	//run until either we run out of data, or the config file tells us to stop

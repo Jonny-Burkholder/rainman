@@ -29,14 +29,14 @@ func (n *Network) newLayer(inputs, outputs, activationType int) *layer {
 	for i := 0; i < inputs; i++ {
 		w[i] = make([]float64, outputs)
 		for j := 0; j < outputs; j++ {
-			w[i][j] = rand.NormFloat64()
+			w[i][j] = rand.Float64()
 		}
 	}
 
 	b := make([]float64, outputs)
 
 	for i := 0; i < outputs; i++ {
-		b[i] = rand.NormFloat64()
+		b[i] = rand.Float64()
 	}
 
 	var a activation
@@ -69,7 +69,11 @@ func (l *layer) fire(input []float64) []float64 {
 	//I forget the formula, but I think this is right. Send the sum of inputs weights
 	//through the activation function, *then* add the bias
 	for i := range l.Outputs {
+<<<<<<< HEAD
 		l.Outputs[i] = l.Activation.fire(l.Outputs[i]/float64(len(l.Outputs)) + l.Biases[i])
+=======
+		l.Outputs[i] = l.Activation.fire(l.Outputs[i]/float64(len(l.Weights[i]))) + l.Biases[i]
+>>>>>>> parent of a7c7fed (Small but significant improvement)
 	}
 
 	return l.Outputs

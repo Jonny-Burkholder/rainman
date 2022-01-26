@@ -32,7 +32,7 @@ func (n *Network) TrainMnist() {
 
 	//run until either we run out of data, or the config file tells us to stop
 	//honestly not really sure why I'm even using chunk sizes here
-	for i*chunkSize < data.N && i < n.Config.MaxSteps && avgErr > n.Config.TrainingCondition {
+	for i*chunkSize < data.N && i < n.Config.MaxSteps {
 		//reset average error
 		avgErr = 0
 

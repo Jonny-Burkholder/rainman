@@ -69,7 +69,7 @@ func (l *layer) fire(input []float64) []float64 {
 	//I forget the formula, but I think this is right. Send the sum of inputs weights
 	//through the activation function, *then* add the bias
 	for i := range l.Outputs {
-		l.Outputs[i] = l.Activation.fire(l.Outputs[i]/float64(len(l.Inputs)) + l.Biases[i])
+		l.Outputs[i] = l.Activation.fire(l.Outputs[i]/float64(len(l.Outputs)) + l.Biases[i])
 	}
 
 	return l.Outputs

@@ -9,8 +9,8 @@ var DefaultConfig = &Config{
 	DescentType:           1,
 	MaxSteps:              10000, //no idea if that's a good size
 	StochasticMax:         30,
-	ReluCap:               6,    //pretty standard stuff
-	LearningRate:          .007, //This will need to scale down with each iteration
+	ReluCap:               6,   //pretty standard stuff
+	LearningRate:          .01, //This will scale down with each iteration
 	TrainingCondition:     .01,
 	ReluLeak:              .01,
 }

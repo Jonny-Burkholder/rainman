@@ -87,7 +87,7 @@ func (l *layer) fire(input []float64) []float64 {
 //previous layer
 func (l *layer) stepBack(rate float64, prime []float64) []float64 {
 	l.ErrorPrime = prime
-	new := l.newPrime(rate)
+	new := l.newPrime()
 	l.updateWeights(rate, prime)
 	l.updateBias(rate, prime)
 	return new
@@ -114,11 +114,13 @@ func (l *layer) updateBias(rate float64, prime []float64) {
 }
 
 //newPrime gives the error values for the layer one step back
-func (l *layer) newPrime(rate float64) []float64 {
+//Ok this is obviously broken, since making the value smaller
+//makes the network function better
+func (l *layer) newPrime() []float64 {
 	newPrime := make([]float64, len(l.Inputs))
 	for i := 0; i < len(l.Outputs); i++ {
 		for j := 0; j < len(l.Inputs); j++ {
-			newPrime[j] += (l.ErrorPrime[i] * l.Weights[j][i] * l.Inputs[j]) / float64(len(l.Inputs))
+			newPrime[j] += l.ErrorPrime[i] * l.Weights[j][i] / float64(len(l.Outputs))
 		}
 	}
 	//fmt.Println(newPrime)

@@ -60,6 +60,10 @@ func (n *Network) newLayer(inputs, outputs, activationType int) *layer {
 func (l *layer) fire(input []float64) []float64 {
 	//Yep, this is redundant, I know
 	l.Inputs = input
+	//zero your output, apparently this is important
+	for k := 0; k < len(l.Outputs); k++ {
+		l.Outputs[k] = 0
+	}
 	for i := 0; i < len(l.Inputs); i++ {
 		for j := 0; j < len(l.Outputs); j++ {
 			l.Outputs[j] += l.Inputs[i] * l.Weights[i][j]

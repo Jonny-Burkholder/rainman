@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	n, err := neuralnetwork.NewNetwork(neuralnetwork.DefaultConfig, 28*28, 280, 72, 10)
+	n, err := neuralnetwork.NewNetwork(neuralnetwork.DefaultConfig, 28*28, 24, 10)
 	//n, err := neuralnetwork.NewNetwork(neuralnetwork.DefaultConfig, 10, 8, 4)
 	if err != nil {
 		panic(err)

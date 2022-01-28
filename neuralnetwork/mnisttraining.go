@@ -101,7 +101,7 @@ func unpackExample(e [][]uint8) []float64 {
 			//math.Exp() function works. Honestly... I'm not even sure why the mnist values
 			//go so high. I'm sure I could figure out a useful way to squishify them between
 			//0 and 100, but... what's the point lol
-			res[k] = float64(e[i][j]) / 100
+			res[k] = float64(e[i][j]) / 255
 			k++
 		}
 	}

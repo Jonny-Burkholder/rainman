@@ -70,8 +70,6 @@ func (l *layer) fire(input []float64) []float64 {
 		}
 	}
 
-	//I forget the formula, but I think this is right. Send the sum of inputs weights
-	//through the activation function, *then* add the bias
 	for i := range l.Outputs {
 		l.Outputs[i] = l.Activation.fire(l.Outputs[i] + l.Biases[i])
 	}
@@ -106,10 +104,8 @@ func (l *layer) updateWeights(rate float64, prime []float64) {
 
 //updateBias
 func (l *layer) updateBias(rate float64, prime []float64) {
-	for i := range prime {
-		for j := range l.Biases {
-			l.Biases[j] -= (rate * prime[i] * l.Activation.derivative(l.Outputs[i]))
-		}
+	for k := range l.Biases {
+		l.Biases[k] -= rate * l.ErrorPrime[k]
 	}
 }
 

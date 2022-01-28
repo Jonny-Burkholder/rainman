@@ -116,7 +116,7 @@ func (l *layer) newPrime() []float64 {
 	newPrime := make([]float64, len(l.Inputs))
 	for i := 0; i < len(l.Outputs); i++ {
 		for j := 0; j < len(l.Inputs); j++ {
-			newPrime[j] += l.ErrorPrime[i] * l.Weights[j][i] / float64(len(l.Outputs))
+			newPrime[j] += l.ErrorPrime[i] * l.Weights[j][i]
 		}
 	}
 	//fmt.Println(newPrime)

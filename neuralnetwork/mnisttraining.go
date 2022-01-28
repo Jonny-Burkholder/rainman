@@ -75,6 +75,8 @@ func (n *Network) TrainMnist() {
 	printout += fmt.Sprintf("Trained %v examples in %1.2f seconds\n", iter, time.Now().Sub(start).Seconds())
 	printout += fmt.Sprintf("Average Error: %1.4f", avgErr)
 
+	fmt.Println(printout)
+
 }
 
 //compressCost averages a slice of cost
@@ -194,5 +196,5 @@ func (n *Network) TestMnist() {
 	printout += fmt.Sprintf("Average Certainty: %1.2f\n", avgCertainty[1])
 	printout += fmt.Sprintf("Average Uncertainty: %1.2f\n", avgCertainty[2])
 
-	fmt.Print(printout)
+	fmt.Println(printout)
 }

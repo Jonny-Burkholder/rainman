@@ -7,7 +7,7 @@ var DefaultConfig = &Config{
 	OutputActivationType:  0,
 	CostFunction:          0,
 	DescentType:           1,
-	MaxSteps:              40,
+	MaxSteps:              1000,
 	StochasticMax:         30,
 	ReluCap:               6,   //pretty standard stuff
 	LearningRate:          .01, //This will scale down with each iteration

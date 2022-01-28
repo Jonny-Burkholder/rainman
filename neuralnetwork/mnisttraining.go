@@ -27,12 +27,12 @@ func (n *Network) TrainMnist() {
 	//let's set some variables
 	var avgErr float64 = 1000
 	i := 0
-	chunkSize := 30
+	chunkSize := 100
 	iter := 0
 
 	//run until either we run out of data, or the config file tells us to stop
 	//honestly not really sure why I'm even using chunk sizes here
-	for i*chunkSize < data.N && iter < n.Config.MaxSteps && avgErr > n.Config.TrainingCondition {
+	for i*chunkSize < data.N && i < n.Config.MaxSteps && avgErr > n.Config.TrainingCondition {
 		//reset average error
 		avgErr = 0
 
@@ -44,7 +44,7 @@ func (n *Network) TrainMnist() {
 		//let's train through a chunk of data using that random index slice
 		for _, j := range chunk {
 			//just to make sure we aren't hanging anywhere
-			if iter%10000 == 0 {
+			if iter%1000 == 0 {
 				fmt.Printf("Training %v examples...\n", iter)
 			}
 			//first, we have to convert the mnist data into something we can read

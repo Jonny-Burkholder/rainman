@@ -10,6 +10,9 @@ import (
 
 //TrainMnist specifically just trains the network to read mnist data
 func (n *Network) TrainMnist() {
+
+	start := time.Now()
+
 	data, err := mnist.ReadTrainSet("./mnist/dataset")
 	if err != nil {
 		panic(err)
@@ -67,6 +70,11 @@ func (n *Network) TrainMnist() {
 
 	}
 
+	var printout string
+
+	printout += fmt.Sprintf("Trained %v examples in %1.2f seconds\n", iter, time.Now().Sub(start).Seconds())
+	printout += fmt.Sprintf("Average Error: %1.4f", avgErr)
+
 }
 
 //compressCost averages a slice of cost
@@ -109,24 +117,27 @@ func unpackExample(e [][]uint8) []float64 {
 }
 
 //decide is a helper function that picks the highest output of the network
-func decide(res []float64) (int, float64) {
+func decide(res []float64) (int, []float64) {
 	digit := 0
-	var certainty float64
+	var certainty = []float64{0, 0, 0}
 	for i, num := range res {
-		if num > certainty {
+		certainty[2] += num
+		if num > certainty[0] {
 			digit = i
-			certainty = num
+			certainty[1] = num - certainty[0]
+			certainty[0] = num
 		}
 	}
+	certainty[2] /= float64(len(res))
 	return digit, certainty
 }
 
 //TestMnist will test a fully-trained network to see how much of the test
 //data it can correctly recognize
 func (n *Network) TestMnist() {
-	var res string
+	var printout string
 	var correct, incorrect int
-	var avgCertainty float64
+	avgCertainty := make([]float64, 3)
 	//do stuff and print stuff here
 	start := time.Now()
 	data, err := mnist.ReadTestSet("./mnist/dataset")
@@ -148,29 +159,40 @@ func (n *Network) TestMnist() {
 		} else {
 			correct++
 		}
-		avgCertainty += certainty
+
+		for j := 0; j < len(avgCertainty); j++ {
+			avgCertainty[j] += certainty[j]
+		}
 
 		if i%1000 == 0 {
 			fmt.Printf("Predicted: %v\n", num)
-			fmt.Println(res)
+			s := ""
+			for j := 0; j < len(res); j++ {
+				s += fmt.Sprintf("%1.4f ", res[j])
+			}
+			fmt.Println(s)
 			fmt.Printf("Expected: %v\n", data.Data[i].Digit)
 			mnist.PrintImage(data.Data[i].Image)
 		}
 		i++
 	}
 
-	avgCertainty /= float64(data.N)
+	for i := 0; i < len(avgCertainty); i++ {
+		avgCertainty[i] /= float64(data.N)
+	}
 
 	//good news is, there's no need to randomize anything
 	//don't even need to return, we'll just track everything
 	//and print from here
 	duration := time.Now().Sub(start)
 
-	res += fmt.Sprintf("Tested %v examples in %v seconds\n\n", data.N, duration.Seconds())
-	res += fmt.Sprintf("Tested Correct: %v\n", correct)
-	res += fmt.Sprintf("Tested Incorrect: %v\n", incorrect)
-	res += fmt.Sprintf("Percent Correct: %2.2f\n", float64(correct)/float64(data.N)*100)
-	res += fmt.Sprintf("Average Certainty: %1.2f\n", avgCertainty)
+	printout += fmt.Sprintf("Tested %v examples in %v seconds\n\n", data.N, duration.Seconds())
+	printout += fmt.Sprintf("Tested Correct: %v\n", correct)
+	printout += fmt.Sprintf("Tested Incorrect: %v\n", incorrect)
+	printout += fmt.Sprintf("Percent Correct: %2.2f\n", float64(correct)/float64(data.N)*100)
+	printout += fmt.Sprintf("Average Confidence: %1.2f\n", avgCertainty[0])
+	printout += fmt.Sprintf("Average Certainty: %1.2f\n", avgCertainty[1])
+	printout += fmt.Sprintf("Average Uncertainty: %1.2f\n", avgCertainty[2])
 
-	fmt.Print(res)
+	fmt.Print(printout)
 }

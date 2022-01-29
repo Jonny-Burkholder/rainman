@@ -3,10 +3,18 @@ package neuralnetwork
 /*These were previously methods on neurons, but
 that was stupid so I changed it*/
 
+/*
 //SigmoidPrime returns the derivative for the
 //logistic sigmoid activation function
 func (s *Sigmoid) derivative(x float64) float64 {
 	return s.fire(x) * (1 - s.fire(x))
+}
+*/
+
+//easy derivative uses the already calculated output
+//of the original sigmoid
+func (s *Sigmoid) derivative(a float64) float64 {
+	return a * (1 - a)
 }
 
 //ReluPrime returns the derivative for the

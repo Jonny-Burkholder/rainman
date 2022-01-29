@@ -36,7 +36,7 @@ func (n *Network) newLayer(inputs, outputs, activationType int) *layer {
 	b := make([]float64, outputs)
 
 	for i := 0; i < outputs; i++ {
-		b[i] = rand.Float64()*2 - 1
+		b[i] = 0 //rand.Float64()*2 - 1
 	}
 
 	var a activation

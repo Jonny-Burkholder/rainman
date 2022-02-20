@@ -47,7 +47,7 @@ func (n *Network) TrainMnist() {
 		//let's train through a chunk of data using that random index slice
 		for _, j := range chunk {
 			//just to make sure we aren't hanging anywhere
-			if iter%1000 == 0 {
+			if iter%10000 == 0 {
 				fmt.Printf("Training %v examples...\n", iter)
 			}
 			//first, we have to convert the mnist data into something we can read

@@ -3,14 +3,14 @@ package neuralnetwork
 var costFunctions = []string{"Mean Squared", "Cross-Entropy"} //for human reference
 
 var DefaultConfig = &Config{
-	DefaultActivationType: 0,
+	DefaultActivationType: 1,
 	OutputActivationType:  0,
 	CostFunction:          0,
 	DescentType:           1,
 	MaxSteps:              1000,
 	StochasticMax:         30,
-	ReluCap:               6,   //pretty standard stuff
-	LearningRate:          .01, //This will scale down with each iteration
+	ReluCap:               6,    //pretty standard stuff
+	LearningRate:          .005, //This will scale down with each iteration
 	TrainingCondition:     .01,
 	ReluLeak:              .01,
 }

@@ -12,7 +12,6 @@ func main() {
 	}
 
 	n.TrainMnist()
-	n.TrainMnist()
 	n.TestMnist()
 
 }
